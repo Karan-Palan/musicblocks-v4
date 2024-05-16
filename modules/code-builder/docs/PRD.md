@@ -104,50 +104,50 @@
 
 
 ## 3. Palette:
-   - **Layout and Organization**:
-     - Collapsible/expandable categories or sections for different Brick types
-     - Customizable order and arrangement of categories
-     - Visual separators or dividers between categories
+### a. **Layout and Organization**:
+   - Collapsible/expandable categories or sections for different Brick types
+   - Customizable order and arrangement of categories
+   - Visual separators or dividers between categories
 
-         ![alt text](./images/image-10.png)
+      ![alt text](./images/image-10.png)
 
-   - **Brick Previews**:
-     - Thumbnail or icon previews for each Brick within a category
-     - Tooltips or pop-ups displaying Brick names and brief descriptions
-     - Color-coding or visual cues for distinguishing different Brick types
+### b. **Brick Previews**:
+   - Thumbnail or icon previews for each Brick within a category
+   - Tooltips or pop-ups displaying Brick names and brief descriptions
+   - Color-coding or visual cues for distinguishing different Brick types
 
-   - **Search and Filtering**:
-     - Search bar or input field for locating specific Bricks by name or keyword
-     - Filter options for narrowing down Bricks based on category, type, or properties
-     - Live search results or suggestions as the user types
+### c. **Search and Filtering**:
+   - Search bar or input field for locating specific Bricks by name or keyword
+   - Filter options for narrowing down Bricks based on category, type, or properties
+   - Live search results or suggestions as the user types
 
-       ![alt text](./images//image-11.png)
+      ![alt text](./images//image-11.png)
 
-   - **Drag and Drop**:
-     - Ability to drag and drop Bricks from the palette onto the workspace
-     - Visual indicators (e.g., ghost preview, outline) for valid drop locations
-     - Snap-to-grid or precise positioning when dropping Bricks
+### d. **Drag and Drop**:
+   - Ability to drag and drop Bricks from the palette onto the workspace
+   - Visual indicators (e.g., ghost preview, outline) for valid drop locations
+   - Snap-to-grid or precise positioning when dropping Bricks
 
         ![alt text](./images/image-12.png)
 
-   - **Brick Creation**:
-     - Options for creating new Bricks or Brick instances directly from the palette
-     - Context menus or shortcuts for duplicating or cloning existing Bricks
-     - Visual feedback or animations when creating or instantiating new Bricks
+### e. **Brick Creation**:
+   - Options for creating new Bricks or Brick instances directly from the palette
+   - Context menus or shortcuts for duplicating or cloning existing Bricks
+   - Visual feedback or animations when creating or instantiating new Bricks
 
-   - **Customization**:
-     - User-defined categories or custom groupings for organizing Bricks
-     - Ability to rename, reorder, or hide/show specific categories
-     - Import/export functionality for sharing or backing up custom palette configurations
+### f. **Customization**:
+   - User-defined categories or custom groupings for organizing Bricks
+   - Ability to rename, reorder, or hide/show specific categories
+   - Import/export functionality for sharing or backing up custom palette configurations
 
-   - **Palette Behavior**:
-     - Dockable or floating palette panel for flexible positioning
-     - Resizable palette window or panel for adjusting its size
-     - Auto-hide or collapse functionality for maximizing workspace area
+### g. **Palette Behavior**:
+   - Dockable or floating palette panel for flexible positioning
+   - Resizable palette window or panel for adjusting its size
+   - Auto-hide or collapse functionality for maximizing workspace area
 
 ## 4. Workspace:
 
-![alt text](image.png)
+![alt text](./images/image-13.png)
 
 ### a. Canvas Area:
    - **Grid-Like Surface**: A grid helps in arranging bricks and stacks.
