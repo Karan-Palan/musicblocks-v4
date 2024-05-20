@@ -12,6 +12,8 @@
    - Editable Data Brick: Values that can be modified by the user. When clicked, these bricks open a text editor or a dropdown menu for user input, allowing customization of note names, pitches, etc.
 
      ![editable bricks](./images/image-1.png)
+     ![alt text](image.png)
+     ![alt text](image-1.png)
 
 
 #### 2. Expression Bricks: Takes values as input, returns a value as output.
@@ -33,7 +35,7 @@
      2. **Hover Color**: When a user hovers over a brick, it changes to a distinct color to indicate it is selectable.
      3. **Disconnected Color**: If a brick is not connected to the stack, it turns gray to indicate it is inactive.
      4. **Execution Color**: When a brick is executed, it changes to a darker shade of its original color to show that it has been activated.
-   - **Spites**: Visual symbols that indicate specific functions or properties of the brick. Some bricks may have spites (like the start brick), while others may not.
+   - **Sprites**: Visual symbols that indicate specific functions or properties of the brick. Some bricks may have sprites (like the start brick), while others may not.
    - **Labels**: 
      1. **Functionality Labels**: Text labels that indicate the function of the brick.
      2. **Argument Labels**: Text labels that indicate the arguments or parameters that need to be provided for the brick's function.
@@ -76,7 +78,10 @@
 
    - **Disable Validation**: Temporarily turn off validation for complex or experimental setups.
 
-### b. Stack Editing:
+      
+      **Note** - this is up for further discussion
+
+### b. Stack Editing: 
    - **Connection Editing**: Options for re-positioning, disconnecting, or connecting.
    - **Quick Edit Shortcuts**: Context menus or keyboard shortcuts speed up editing.
 
@@ -108,6 +113,7 @@
       - Searchbar design to be implemented:
       ![alt text](./images/image-17.png)
           The idea here is to have a fixed searchbar on the left side of the workspace through which users can search for bricks, group them etc.
+          Note - It is just a one big list and categories on the left are positions on the list.
 
 ### d. **Drag and Drop**:
    - Ability to drag and drop Bricks from the palette onto the workspace.
@@ -126,3 +132,4 @@
    - **Cloning/Duplication**: Users can easily create copies of bricks for repeated use.
    - **Scaling and Rotation**: Bricks can be resized and rotated to fit the workspace better.
    - **Undo/Redo**: Users can revert or reapply changes to their stacks.
+   - **Removal/Deletion of Bricks** : Users can remove/delete bricks
