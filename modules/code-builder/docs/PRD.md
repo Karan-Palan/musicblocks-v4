@@ -46,7 +46,11 @@
 ### c. Brick Interactions
    - **Inline Text Editing**: Users can click on text fields within bricks to edit labels and values directly.
      - Some bricks only open an inline text editor when clicked.
+
+
        ![inline text editing](./images/image-4.png)
+
+
      - Other bricks open both an inline text editor and a context menu for additional options.
        ![inline text editor with context menu](./images/image-15.png)
    - **Context Menus**: For more complex properties, a separate interface allows detailed configuration.
@@ -92,7 +96,7 @@
 
 ### b. **Brick Previews**:
    - Tooltips or pop-ups displaying Brick names and brief descriptions
-   ![alt text](image.png)
+   ![alt text](./images/image-16.png)
    - Color-coding or visual cues for distinguishing different Brick types
 
 ### c. **Search and Filtering**:
@@ -102,7 +106,7 @@
       - Searchbar in Musicblocks as of now:
       ![alt text](./images//image-11.png)
       - Searchbar design to be implemented:
-      ![alt text](image-1.png)
+      ![alt text](./images/image-17.png)
           The idea here is to have a fixed searchbar on the left side of the workspace through which users can search for bricks, group them etc.
 
 ### d. **Drag and Drop**:
