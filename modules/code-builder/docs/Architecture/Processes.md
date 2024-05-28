@@ -1,110 +1,166 @@
-# List of processes for each part of the Masonry Framework:
+# Processes for Data Flow Diagram
 
-## DFD 1
+## Level 0: Masonry Framework Communication with MusicBlocks
+1. **Load Configuration**:
+   - Input: Configuration File
+   - Output: Initialized System
 
-1. **User**:
-   - Interacts with the Masonry Framework
-   - Drags and drops blocks from the palette to the workspace
-   - Connects/disconnects blocks
-   - Edits block properties (inline text editing, context menus)
-   - Performs stack editing operations (repositioning, grouping, collapsing/expanding)
-   - Searches and filters blocks in the palette
-   - Clones/duplicates blocks
-   - Scales and rotates blocks
-   - Undoes/redos changes
-   - Removes/deletes blocks
+2. **Save Configuration**:
+   - Input: Current State
+   - Output: Updated Configuration File
 
-2. **Palette**:
-   - Organizes and displays available blocks in categories
-   - Allows collapsing/expanding categories
-   - Provides visual separators and dividers between categories
-   - Shows block previews with tooltips and visual cues
-   - Enables searching and filtering of blocks
-   - Facilitates drag and drop of blocks to the workspace
+3. **Generate Syntax Tree**:
+   - Input: Brick Stack Data
+   - Output: Syntax Tree
 
-3. **Workspace**:
-   - Serves as the canvas for creating and managing stacks of blocks
-   - Allows connecting/disconnecting blocks
-   - Enables stack editing operations (repositioning, grouping, collapsing/expanding)
-   - Supports cloning/duplication of blocks
-   - Provides scaling and rotation of blocks
-   - Implements undo/redo functionality
-   - Facilitates removal/deletion of blocks
+4. **Parse Syntax Tree**:
+   - Input: Syntax Tree
+   - Output: Executable Actions
 
-4. **Blocks**:
-   - Represents different types of blocks (Data Bricks, Expression Bricks, Statement Bricks, Block Bricks)
-   - Displays distinct shapes, colors, sprites, labels, and input/output ports
-   - Allows inline text editing and context menu interactions
-   - Supports argument connections and brick-to-brick/stack connections
+## Level 1: Interaction between Brick, Palette, Workspace, and Stack of Bricks
 
-5. **Stack of Blocks**:
-   - Manages the combination and execution of connected blocks
-   - Performs stack validation with visual feedback and error indicators
-   - Facilitates stack editing operations (repositioning, disconnecting, connecting)
-   - Enables stack grouping with collapsible/expandable groups
+### Bricks:
+1. **Initialize Brick**:
+   - Input: Brick Properties
+   - Output: Initialized Brick
 
-## DFD 2
+2. **Provide Brick Properties**:
+   - Input: Brick ID from Workspace
+   - Output: Brick Properties to Workspace
 
-1. **Bricks**:
-   - **Model**:
-     - ManageBrickData: Handle brick data (e.g., values, properties, types)
-     - HandleBrickConnections: Manage brick connections (input/output ports)
-     - ValidateBrickConnections: Validate the connections between bricks
-   - **View**:
-     - RenderBrickAppearance: Display the visual appearance of bricks (shape, color, sprites, labels, ports)
-     - ShowInlineEditor: Render inline text editors for editing brick data
-     - ShowContextMenu: Display context menus for brick configurations
-   - **Controller**:
-     - HandleUserInput: Process user interactions (e.g., clicking, dragging, editing)
-     - UpdateBrickData: Update brick data based on user input
-     - TriggerViewUpdate: Notify the view to update the brick's appearance
-     - ManageBrickInteractions: Handle brick interactions (e.g., connecting, disconnecting)
+### Palette:
+1. **Load Brick List**:
+   - Input: Configuration Settings
+   - Output: List of Bricks
 
-2. **Stack of Bricks**:
-   - **Model**:
-     - ManageBricksStackData: Handle data related to the stack of bricks
-     - ValidateStackConnections: Validate the connections between bricks in the stack
-     - HandleStackGrouping: Manage grouping and nesting of bricks in the stack
-   - **View**:
-     - RenderBricksStack: Display the stack of bricks
-     - ShowValidationFeedback: Provide visual feedback for valid/invalid connections
-     - ShowCollapsedGroups: Render collapsed/expanded groups of bricks in the stack
-   - **Controller**:
-     - HandleBrickConnections: Manage connecting/disconnecting bricks in the stack
-     - PerformValidation: Trigger validation of brick connections in the stack
-     - UpdateStackView: Notify the view to update the stack display
-     - ManageStackGrouping: Handle grouping and ungrouping of bricks in the stack
+2. **Select Brick**:
+   - Input: Brick Selection
+   - Output: Selected Brick Properties to Workspace
 
-3. **Palette**:
-   - **Model**:
-     - ManageBrickCategories: Handle data for brick categories
-     - FilterBricks: Filter bricks based on user input
-   - **View**:
-     - DisplayCategories: Render the brick categories in the palette
-     - ShowBrickPreviews: Display brick previews and tooltips
-   - **Controller**:
-     - HandleCategoryToggle: Expand/collapse brick categories
-     - ProcessSearch: Handle user search input and filter bricks
-     - UpdatePaletteView: Notify the view to update the palette display
+### Workspace:
+1. **Add Brick to Workspace**:
+   - Input: Brick Properties from Palette
+   - Output: Updated Workspace
 
-4. **Workspace**:
-   - **Model**:
-     - ManageBricksStackData: Handle data related to stacks of bricks in the workspace
-     - HandleUndoRedo: Manage undo/redo operations for the workspace
-   - **View**:
-     - RenderWorkspace: Display the workspace and stacks of bricks
-     - ShowContextMenus: Render context menus for workspace interactions
-   - **Controller**:
-     - HandleStackOperations: Manage stack operations (create, delete, clone, move, group)
-     - ProcessUndoRedo: Handle undo/redo requests from the user
-     - UpdateWorkspaceView: Notify the view to update the workspace display
-     - HandleBrickScaling: Handle scaling and resizing of bricks in the workspace
-     - HandleBrickRotation: Handle rotation of bricks in the workspace
+2. **Update Brick Position**:
+   - Input: Brick ID and Position Data
+   - Output: Updated Brick Position in Workspace
 
-5. **User Interface**:
-   - **View**:
-     - RenderUI: Display the overall user interface
-     - ShowToolbars: Render toolbars and UI controls
-   - **Controller**:
-     - HandleUIEvents: Process user interactions with the UI (e.g., toolbar buttons)
-     - CoordinateComponents: Coordinate communication between components (bricks, stack, palette, workspace)
+3. **Connect Bricks**:
+   - Input: Brick IDs and Connection Data
+   - Output: Updated Brick Stack in Workspace
+
+4. **Disconnect Bricks**:
+   - Input: Brick IDs
+   - Output: Updated Brick Stack in Workspace
+
+5. **Save Workspace State**:
+   - Input: Current Workspace Data
+   - Output: Saved Workspace State
+
+### Stack of Bricks:
+1. **Initialize Stack**:
+   - Input: Brick Stack Data
+   - Output: Initialized Stack
+
+2. **Provide Stack Properties**:
+   - Input: Stack ID from Workspace
+   - Output: Stack Properties to Workspace
+
+### Level 2: Detailed Interaction within MVC Architecture
+
+### Bricks:
+1. **Data Brick Processing**:
+   - Input: Hardcoded Data, Editable Data
+   - Output: Processed Data
+
+2. **Expression Brick Processing**:
+   - Input: Input Values
+   - Output: Calculated Output
+
+3. **Statement Brick Execution**:
+   - Input: Action Parameters
+   - Output: Executed Action
+
+4. **Block Brick Execution**:
+   - Input: Arguments, Nesting Data
+   - Output: Execution Result
+
+5. **Render Brick**:
+   - Input: Brick Properties
+   - Output: Visual Representation
+
+6. **Provide Brick Properties**:
+   - Input: Request from Workspace
+   - Output: Brick Properties
+
+### Palette:
+1. **Load Palette**:
+   - Input: Configuration Settings
+   - Output: Loaded Palette
+
+2. **Select Brick**:
+   - Input: Brick Selection
+   - Output: Brick Properties to Workspace
+
+3. **Search and Filter Bricks**:
+   - Input: Search Query
+   - Output: Filtered Brick List
+
+4. **Provide Brick List**:
+   - Input: Request from Workspace
+   - Output: List of Bricks
+
+### Workspace:
+1. **Add Brick to Workspace**:
+   - Input: Brick Properties from Palette
+   - Output: Updated Workspace
+
+2. **Update Brick Position**:
+   - Input: Position Data
+   - Output: Updated Brick Position
+
+3. **Connect Bricks**:
+   - Input: Brick IDs and Connection Data
+   - Output: Updated Brick Stack
+
+4. **Disconnect Bricks**:
+   - Input: Brick IDs
+   - Output: Updated Brick Stack
+
+5. **Render Workspace**:
+   - Input: Workspace Data
+   - Output: Visual Representation
+
+6. **Save Workspace State**:
+   - Input: Current Workspace Data
+   - Output: Saved State
+
+7. **Load Workspace State**:
+   - Input: Saved State
+   - Output: Restored Workspace
+
+### Stack of Bricks:
+1. **Initialize Stack**:
+   - Input: Brick Stack Data
+   - Output: Initialized Stack
+
+2. **Validate Brick Stack**:
+   - Input: Brick Stack
+   - Output: Validation Feedback
+
+3. **Edit Stack Connections**:
+   - Input: Connection Data
+   - Output: Updated Connections
+
+4. **Handle Stack Grouping**:
+   - Input: Grouping Data
+   - Output: Grouped Stacks
+
+5. **Process Brick Stack**:
+   - Input: Brick Data
+   - Output: Executed Stack
+
+6. **Provide Stack Properties**:
+   - Input: Request from Workspace
+   - Output: Stack Properties
