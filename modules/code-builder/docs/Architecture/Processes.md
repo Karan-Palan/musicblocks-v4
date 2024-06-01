@@ -36,6 +36,7 @@
 2. **Select Brick**:
    - Input: Brick Selection
    - Output: Selected Brick Properties to Workspace
+   (How this works is, The palette will have a loaded list of SVGs. When you drag one from palette onto the workspace, the brick will be created on the workspace whos id matches to the one in brick)
 
 ### Workspace:
 1. **Add Brick to Workspace**:
@@ -67,100 +68,129 @@
    - Input: Stack ID from Workspace
    - Output: Stack Properties to Workspace
 
-### Level 2: Detailed Interaction within MVC Architecture
+## Level 2: Detailed Interaction within MVC Architecture
 
-### Bricks:
-1. **Data Brick Processing**:
-   - Input: Hardcoded Data, Editable Data
-   - Output: Processed Data
 
-2. **Expression Brick Processing**:
-   - Input: Input Values
-   - Output: Calculated Output
+### Model:
+1. BrickModel:
+   - Properties:
+     - brickType
+     - originalColor
+     - hoverColor
+     - disconnectedColor
+     - executionColor
+     - highlightState
+     - shape
+     - sprites
+     - labels
+     - inputPorts
+     - outputPorts
+     - editableTextLabels
+   - Methods:
+     - setHighlightState(state)
+     - updateProperties(properties)
+     - updateLabels(labels)
+     - updatePorts(inputPorts, outputPorts)
+2. StackModel:
+   - Properties:
+     - connectedBricks
+     - startPosition
+     - validationRules
+     - collapsibleState
+   - Methods:
+     - addBrick(brick)
+     - removeBrick(brick)
+     - updateProperties(properties)
+     - validateStack()
+     - setCollapsibleState(state)
+3. PaletteModel:
+   - Properties:
+     - availableBricks
+     - categories
+     - searchQuery
+     - filters
+   - Methods:
+     - loadBricks(bricks)
+     - updateBrickAvailability(brick, available)
+     - categorizeItems(categories)
+     - filterItems(filters)
+     - searchItems(query)
+4. WorkspaceModel:
+   - Properties:
+     - connectedStacks
+     - brickPositions
+     - zoomLevel
+     - undoRedoStack
+   - Methods:
+     - addStack(stack)
+     - removeStack(stack)
+     - updateBrickPosition(brick, position)
+     - connectBricks(brick1, brick2)
+     - disconnectBricks(brick1, brick2)
+     - deleteBrick(brick)
+     - zoomIn()
+     - zoomOut()
+     - undo()
+     - redo()
 
-3. **Statement Brick Execution**:
-   - Input: Action Parameters
-   - Output: Executed Action
+### View:
+1. BrickView:
+   - Methods:
+     - renderBrick(brick)
+     - updateBrickAppearance(brick)
+     - renderInlineTextEditing(brick)
+     - renderContextMenu(brick)
+2. StackView:
+   - Methods:
+     - renderStack(stack)
+     - updateStackAppearance(stack)
+     - renderValidationFeedback(stack)
+     - renderCollapsibleState(stack)
+3. PaletteView:
+   - Methods:
+     - renderPalette(palette)
+     - updatePaletteAppearance(palette)
+     - renderCategories(categories)
+     - renderSearchBar(searchQuery)
+     - renderFilters(filters)
+4. WorkspaceView:
+   - Methods:
+     - renderWorkspace(workspace)
+     - updateWorkspaceAppearance(workspace)
+     - handleUserInteractions(interaction)
+     - renderZoomControls(zoomLevel)
+     - renderUndoRedoButtons(undoRedoStack)
 
-4. **Block Brick Execution**:
-   - Input: Arguments, Nesting Data
-   - Output: Execution Result
-
-5. **Render Brick**:
-   - Input: Brick Properties
-   - Output: Visual Representation
-
-6. **Provide Brick Properties**:
-   - Input: Request from Workspace
-   - Output: Brick Properties
-
-### Palette:
-1. **Load Palette**:
-   - Input: Configuration Settings
-   - Output: Loaded Palette
-
-2. **Select Brick**:
-   - Input: Brick Selection
-   - Output: Brick Properties to Workspace
-
-3. **Search and Filter Bricks**:
-   - Input: Search Query
-   - Output: Filtered Brick List
-
-4. **Provide Brick List**:
-   - Input: Request from Workspace
-   - Output: List of Bricks
-
-### Workspace:
-1. **Add Brick to Workspace**:
-   - Input: Brick Properties from Palette
-   - Output: Updated Workspace
-
-2. **Update Brick Position**:
-   - Input: Position Data
-   - Output: Updated Brick Position
-
-3. **Connect Bricks**:
-   - Input: Brick IDs and Connection Data
-   - Output: Updated Brick Stack
-
-4. **Disconnect Bricks**:
-   - Input: Brick IDs
-   - Output: Updated Brick Stack
-
-5. **Render Workspace**:
-   - Input: Workspace Data
-   - Output: Visual Representation
-
-6. **Save Workspace State**:
-   - Input: Current Workspace Data
-   - Output: Saved State
-
-7. **Load Workspace State**:
-   - Input: Saved State
-   - Output: Restored Workspace
-
-### Stack of Bricks:
-1. **Initialize Stack**:
-   - Input: Brick Stack Data
-   - Output: Initialized Stack
-
-2. **Validate Brick Stack**:
-   - Input: Brick Stack
-   - Output: Validation Feedback
-
-3. **Edit Stack Connections**:
-   - Input: Connection Data
-   - Output: Updated Connections
-
-4. **Handle Stack Grouping**:
-   - Input: Grouping Data
-   - Output: Grouped Stacks
-
-5. **Process Brick Stack**:
-   - Input: Brick Data
-   - Output: Executed Stack
-
-6. **Provide Stack Properties**:
-   - Input: Request from Workspace
-   - Output: Stack Properties
+### Controller:
+1. BrickController:
+   - Methods:
+     - handleBrickPropertyChange(brick, properties)
+     - handleBrickHighlightStateChange(brick, state)
+     - handleInlineTextEditing(brick, text)
+     - handleContextMenuAction(brick, action)
+2. StackController:
+   - Methods:
+     - handleAddBrick(stack, brick)
+     - handleRemoveBrick(stack, brick)
+     - handleStackPropertyChange(stack, properties)
+     - handleStackValidation(stack)
+     - handleCollapsibleStateChange(stack, state)
+3. PaletteController:
+   - Methods:
+     - handleBrickLoad(palette, bricks)
+     - handleBrickAvailabilityChange(palette, brick, available)
+     - handleCategorization(palette, categories)
+     - handleFiltering(palette, filters)
+     - handleSearching(palette, query)
+4. WorkspaceController:
+   - Methods:
+     - handleAddStack(workspace, stack)
+     - handleRemoveStack(workspace, stack)
+     - handleBrickPositionChange(workspace, brick, position)
+     - handleBrickConnection(workspace, brick1, brick2)
+     - handleBrickDisconnection(workspace, brick1, brick2)
+     - handleBrickDeletion(workspace, brick)
+     - handleZoomIn(workspace)
+     - handleZoomOut(workspace)
+     - handleUndo(workspace)
+     - handleRedo(workspace)
