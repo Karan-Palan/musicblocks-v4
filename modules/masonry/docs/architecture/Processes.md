@@ -1,6 +1,7 @@
 # Processes for Data Flow Diagram
 
 ## Level 0: Masonry Framework Communication with MusicBlocks
+
 1. **Load Configuration**:
    - Input: Configuration File
    - Output: Initialized System
@@ -19,7 +20,8 @@
 
 ## Level 1: Interaction between Brick, Palette, Workspace, and Stack of Bricks
 
-### Bricks:
+### Bricks
+
 1. **Initialize Brick**:
    - Input: Brick Properties
    - Output: Initialized Brick
@@ -28,7 +30,8 @@
    - Input: Brick ID from Workspace
    - Output: Brick Properties to Workspace
 
-### Palette:
+### Palette
+
 1. **Load Brick List**:
    - Input: Configuration Settings
    - Output: List of Bricks
@@ -38,7 +41,8 @@
    - Output: Selected Brick Properties to Workspace
    (How this works is, The palette will have a loaded list of SVGs. When you drag one from palette onto the workspace, the brick will be created on the workspace whos id matches to the one in brick)
 
-### Workspace:
+### Workspace
+
 1. **Add Brick to Workspace**:
    - Input: Brick Properties from Palette
    - Output: Updated Workspace
@@ -59,7 +63,8 @@
    - Input: Current Workspace Data
    - Output: Saved Workspace State
 
-### Stack of Bricks:
+### Stack of Bricks
+
 1. **Initialize Stack**:
    - Input: Brick Stack Data
    - Output: Initialized Stack
@@ -70,8 +75,8 @@
 
 ## Level 2: Detailed Interaction within MVC Architecture
 
+### Model
 
-### Model:
 1. BrickModel:
    - Properties:
      - brickType
@@ -133,7 +138,8 @@
      - undo()
      - redo()
 
-### View:
+### View
+
 1. BrickView:
    - Methods:
      - renderBrick(brick)
@@ -161,7 +167,8 @@
      - renderZoomControls(zoomLevel)
      - renderUndoRedoButtons(undoRedoStack)
 
-### Controller:
+### Controller
+
 1. BrickController:
    - Methods:
      - handleBrickPropertyChange(brick, properties)
