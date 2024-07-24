@@ -9,22 +9,22 @@
 
 - Hardcoded Data Brick: Fixed values that cannot be changed by the user. Examples include predefined note values, counts, etc.
 
-     ![alt text](./images/image.png)
+     ![alt text](../images/image.png)
 - Editable Data Brick: Values that can be modified by the user. When clicked, these bricks open a text editor or a dropdown menu for user input, allowing customization of note names, pitches, etc.
 
-     ![editable bricks](./images/image-1.png)
+     ![editable bricks](../images/image-1.png)
 
 #### 2. Expression Bricks: Takes values as input, returns a value as output
 
-   ![alt text](./images/image-2.png)
+   ![alt text](../images/image-2.png)
 
 #### 3. Statement Bricks: These define actions to be taken
 
-   ![example](./images/image-3.png)
+   ![example](../images/image-3.png)
 
 #### 4. Block Bricks: Contain nesting, also execute something like the statement bricks. Takes 0 or more arguments
 
-   ![alt text](./images/image-14.png)
+   ![alt text](../images/image-14.png)
 
 ### b. Brick Appearance
 
@@ -50,19 +50,19 @@
 - **Inline Text Editing**: Users can click on text fields within bricks to edit labels and values directly.
   - Some bricks only open an inline text editor when clicked.
 
-       ![inline text editing](./images/image-4.png)
+       ![inline text editing](../images/image-4.png)
 
   - Other bricks open both an inline text editor and a context menu for additional options.
 
-       ![inline text editor with context menu](./images/image-15.png)
+       ![inline text editor with context menu](../images/image-15.png)
 - **Context Menus**: For more complex properties, a separate interface allows detailed configuration.
 
-     ![dedicated editors](./images/image-5.png)
+     ![dedicated editors](../images/image-5.png)
 - **Connection Types**:
      1. **Argument Connections**: Bricks can be connected to input arguments of other bricks. This allows for passing data or parameters into the brick’s function.
      2. **Brick-to-Brick or Stack Connections**: Bricks can be connected directly to other bricks or to a stack of bricks. This enables building complex sequences and structures by chaining bricks together.
 
-        ![alt text](./images/image-8.png)
+        ![alt text](../images/image-8.png)
 
 ## 2. Stack of Bricks
 
@@ -70,12 +70,10 @@
 
 - **Visual Feedback**: Indicators show whether brick combinations are valid.
 
-      ![alt text](./images/image-6.png)
-
 - **Error Indicators**: Explanations for incompatible connections help users troubleshoot.
   - Add a reddish boundary for users to easily tell whether the bricks are mergeable or not.  
 
-   ![alt text](./images/image-7.png)
+   ![alt text](../images/image-7.png)
 
 - **Disable Validation**: Temporarily turn off validation for complex or experimental setups.
 
@@ -90,7 +88,7 @@
 
 - **Collapsible Groups**: Groups can be collapsed or expanded to manage complexity.
 
-     ![alt text](./images/image-9.png)
+     ![alt text](../images/image-9.png)
 
 ## 3. Palette
 
@@ -100,13 +98,13 @@
 - Visual separators or dividers between categories
 - Customizable order and arrangement of categories
 
-      ![alt text](./images/image-10.png)
+     ![alt text](../images/image-10.png)
 
 ### b. **Brick Previews**
 
 - Tooltips or pop-ups displaying Brick names and brief descriptions
 
-   ![alt text](./images/image-16.png)
+   ![alt text](../images/image-16.png)
 
 - Color-coding or visual cues for distinguishing different Brick types
 
@@ -117,11 +115,11 @@
 - Live search results or suggestions as the user types
   - Searchbar in Musicblocks as of now:
 
-      ![alt text](./images//image-11.png)
+      ![alt text](../images//image-11.png)
 
   - Searchbar design to be implemented:
 
-      ![alt text](./images/image-17.png)
+      ![alt text](../images/image-17.png)
           The idea here is to have a fixed searchbar on the left side of the workspace through which users can search for bricks, group them etc.
           Note - It is just a one big list and categories on the left are positions on the list.
 
@@ -130,13 +128,13 @@
 - Ability to drag and drop Bricks from the palette onto the workspace.
 - Visual indicators (e.g., ghost preview, outline) for valid drop locations.
 
-     ![drag and drop](./images/image-12.png)
+     ![drag and drop](../images/image-12.png)
 
   - While dragging a brick from the palette, the brick should temporarily disappear from the palette until it is placed in the workspace.
 
 ## 4. Workspace
 
-![alt text](./images/image-13.png)
+![alt text](../images/image-13.png)
 
 - **Cloning/Duplication**: Users can easily create copies of bricks for repeated use.
 - **Scaling and Rotation**: Bricks can be resized and rotated to fit the workspace better.
