@@ -32,7 +32,6 @@ export default class BrickBlock extends BrickModelBlock {
         scale: number;
         connectAbove: boolean;
         connectBelow: boolean;
-        nestLengthY?: number;
     }) {
         super(params);
         const argsKeys = Object.keys(this._args);
@@ -42,7 +41,7 @@ export default class BrickBlock extends BrickModelBlock {
             hasNotchInsTop: this._connectAbove,
             hasNotchInsBot: this._connectBelow,
             scale: this._scale,
-            nestLengthY: params.nestLengthY ?? 17,
+            nestLengthY: 30,
             innerLengthX: 100,
             argHeights: Array.from({ length: argsKeys.length }, () => 17),
         });
