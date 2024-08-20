@@ -1,29 +1,17 @@
-import type { DOMAttributes, JSX } from 'react';
-import type { Brick } from './utils';
+import type { JSX } from 'react';
+import type { IBrickData } from '@/@types/brick';
 
-export default function ({
-  brickData,
-  moveProps,
-  coords,
-  color,
-}: {
-  brickData: Brick;
-  moveProps: DOMAttributes<unknown>;
-  coords: { x: number; y: number };
-  color: string;
-}): JSX.Element {
+export default function (props: { instance: IBrickData }): JSX.Element {
+  const { instance } = props;
+
   return (
-    <g
-      {...moveProps}
-      transform={`translate(${coords.x},${coords.y}) scale(${brickData.instance.scale})`}
-      tabIndex={0}
-    >
+    <g transform={`scale(${instance.scale})`}>
       <path
-        d={brickData.instance.SVGpath}
+        d={instance.SVGpath}
         style={{
-          fill: color,
+          fill: instance.colorBg as string,
           fillOpacity: 1,
-          stroke: brickData.instance.outline as string,
+          stroke: instance.outline as string,
           strokeWidth: 1,
           strokeLinecap: 'round',
           strokeOpacity: 1,
