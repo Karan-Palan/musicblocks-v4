@@ -7,7 +7,7 @@ import { generatePath } from '../utils/path';
 
 /**
  * @class
- * Final class that defines a expression brick.
+ * Final class that defines an expression brick.
  */
 export default class BrickExpression extends BrickModelExpression {
     readonly _pathResults: ReturnType<typeof generatePath>;
@@ -50,7 +50,16 @@ export default class BrickExpression extends BrickModelExpression {
     }
 
     public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
-        return this._pathResults.bBoxBrick;
+        return {
+            extent: {
+                width: this._pathResults.bBoxBrick.extent.width * this._scale,
+                height: this._pathResults.bBoxBrick.extent.height * this._scale,
+            },
+            coords: {
+                x: this._pathResults.bBoxBrick.coords.x * this._scale,
+                y: this._pathResults.bBoxBrick.coords.y * this._scale,
+            },
+        };
     }
 
     public get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }> {
@@ -58,18 +67,31 @@ export default class BrickExpression extends BrickModelExpression {
         const result: Record<string, { extent: TBrickExtent; coords: TBrickCoords }> = {};
 
         argsKeys.forEach((key, index) => {
-            result[key] = { extent: { width: 0, height: 0 }, coords: { x: 0, y: 0 } };
-            const argX = this._pathResults.bBoxArgs.coords[index].x;
-            const argY = this._pathResults.bBoxArgs.coords[index].y;
-
-            result[key].extent = this._pathResults.bBoxArgs.extent;
-            result[key].coords = { x: argX, y: argY };
+            result[key] = {
+                extent: {
+                    width: this._pathResults.bBoxArgs.extent.width * this._scale,
+                    height: this._pathResults.bBoxArgs.extent.height * this._scale,
+                },
+                coords: {
+                    x: this._pathResults.bBoxArgs.coords[index].x * this._scale,
+                    y: this._pathResults.bBoxArgs.coords[index].y * this._scale,
+                },
+            };
         });
 
         return result;
     }
 
     public get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords } {
-        return this._pathResults.bBoxNotchArg!;
+        return {
+            extent: {
+                width: this._pathResults.bBoxNotchArg!.extent.width * this._scale,
+                height: this._pathResults.bBoxNotchArg!.extent.height * this._scale,
+            },
+            coords: {
+                x: this._pathResults.bBoxNotchArg!.coords.x * this._scale,
+                y: this._pathResults.bBoxNotchArg!.coords.y * this._scale,
+            },
+        };
     }
 }
