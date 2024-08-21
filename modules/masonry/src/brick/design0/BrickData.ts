@@ -44,10 +44,30 @@ export default class BrickData extends BrickModelData {
     }
 
     public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
-        return this._pathResults.bBoxBrick;
+        const { extent, coords } = this._pathResults.bBoxBrick;
+        return {
+            extent: {
+                width: extent.width * this._scale,
+                height: extent.height * this._scale,
+            },
+            coords: {
+                x: coords.x * this._scale,
+                y: coords.y * this._scale,
+            },
+        };
     }
 
     public get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords } {
-        return this._pathResults.bBoxNotchArg!;
+        const { extent, coords } = this._pathResults.bBoxNotchArg!;
+        return {
+            extent: {
+                width: extent.width * this._scale,
+                height: extent.height * this._scale,
+            },
+            coords: {
+                x: coords.x * this._scale,
+                y: coords.y * this._scale,
+            },
+        };
     }
 }
