@@ -9,6 +9,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint src",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "playground": "vite playground --host --port 5601"
   }
 }
