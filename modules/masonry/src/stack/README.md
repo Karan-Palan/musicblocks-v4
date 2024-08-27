@@ -9,17 +9,18 @@
 
 ### Methods
 
-- `constructor(brick: BrickModelData | BrickModelExpression | BrickModelStatement |BrickModelBlock)`: Initializes a StackNode with the given brick and an empty children array.
+- `constructor(brick: BrickModelData | BrickModelExpression | BrickModelStatement |BrickModelBlock)`
+: Initializes a StackNode with the given brick and an empty children array.
 
 ## Stack
 
-### Intrinsic
+### - Intrinsic
 
 - `id`: unique ID for the stack instance
 - `rootNodes`: array of root StackNode instances
 - `_validationDisabled`: private flag to disable validation checks
 
-### Methods
+### - Methods
 
 - `constructor(id: string)`: Initializes a Stack with the given ID and an empty rootNodes array.
 - `validate(): boolean`: Validates the stack, returning `true` if there are no validation errors or
@@ -45,15 +46,17 @@ at the specified position is valid for the given node.
 
 ## Factory Function
 
-### Methods
+### -Methods
 
 - `createStackNode(brick: BrickModelData | BrickModelExpression | BrickModelStatement |
 BrickModelBlock): IStackNode`: Creates a StackNode based on the given brick type.
 
 ---
 
-**Note:** Intrinsic properties are set in the constructor and cannot be modified once instantiated. They are accessible using getters.
+**Note:** Intrinsic properties are set in the constructor and cannot be modified once instantiated.
+They are accessible using getters.
 
-**Note:** Private methods are for internal use within the Stack class and should not be accessed directly from outside.
+**Note:** Private methods are for internal use within the Stack class and should not be accessed
+directly from outside.
 
 ---

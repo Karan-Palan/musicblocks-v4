@@ -5,12 +5,16 @@
 
 ### a. Brick Types
 
-#### 1. Data Bricks: These serve as inputs for other bricks and come in two types: hardcoded and editable
+#### 1.Data Bricks: These serve as inputs for other bricks and come in two types
 
-- Hardcoded Data Brick: Fixed values that cannot be changed by the user. Examples include predefined note values, counts, etc.
+#### hardcoded and editable
+
+- Hardcoded Data Brick: Fixed values that cannot be changed by the user. Examples include predefined
+ note values, counts, etc.
 
      ![alt text](../images/image.png)
-- Editable Data Brick: Values that can be modified by the user. When clicked, these bricks open a text editor or a dropdown menu for user input, allowing customization of note names, pitches, etc.
+- Editable Data Brick: Values that can be modified by the user. When clicked, these bricks open a
+text editor or a dropdown menu for user input, allowing customization of note names, pitches, etc.
 
      ![editable bricks](../images/image-1.png)
 
@@ -22,7 +26,9 @@
 
    ![example](../images/image-3.png)
 
-#### 4. Block Bricks: Contain nesting, also execute something like the statement bricks. Takes 0 or more arguments
+#### 4. Block Bricks: Contain nesting, also execute something like the statement
+
+#### bricks. Takes 0 or more arguments
 
    ![alt text](../images/image-14.png)
 
@@ -31,19 +37,28 @@
 - **Distinct Shapes**: Each brick type has a unique shape to differentiate its function visually.
 - **Colors**:
      1. **Original Color**: Each brick has a unique color that represents its type.
-     2. **Hover Color**: When a user hovers over a brick, it changes to a distinct color to indicate it is selectable.
-     3. **Disconnected Color**: If a brick is not connected to the stack, it turns gray to indicate it is inactive.
-     4. **Execution Color**: When a brick is executed, it changes to a darker shade of its original color to show that it has been activated.
-- **Sprites**: Visual symbols that indicate specific functions or properties of the brick. Some bricks may have sprites (like the start brick), while others may not.
+     2. **Hover Color**: When a user hovers over a brick, it changes to a distinct color to indicate
+      it is selectable.
+     3. **Disconnected Color**: If a brick is not connected to the stack, it turns gray to indicate
+      it is inactive.
+     4. **Execution Color**: When a brick is executed, it changes to a darker shade of its original
+      color to show that it has been activated.
+- **Sprites**: Visual symbols that indicate specific functions or properties of the brick. Some
+bricks may have sprites (like the start brick), while others may not.
 - **Labels**:
      1. **Functionality Labels**: Text labels that indicate the function of the brick.
-     2. **Argument Labels**: Text labels that indicate the arguments or parameters that need to be provided for the brick's function.
+     2. **Argument Labels**: Text labels that indicate the arguments or parameters that need to be
+     provided for the brick's function.
 - **Input/Output Ports**: Connectors that visually represent where bricks can attach to each other.
-- **Editable Text Labels/Fields**: Users can input data directly into the bricks, such as note names, durations, and numerical values.
+- **Editable Text Labels/Fields**: Users can input data directly into the bricks, such as note names,
+ durations, and numerical values.
 
-   **Side Note:** If we want to implement a design similar to Scratch in the future, we can consider the following approach for connecting blocks:
+   **Side Note:** If we want to implement a design similar to Scratch in the future, we can consider
+the following approach for connecting blocks:
 
-- In Scratch, blocks are connected horizontally in a row for sequential execution. Each block has a tab at the bottom and a notch at the top, allowing them to snap together in a linear sequence. This design makes it clear which blocks will execute in order.
+- In Scratch, blocks are connected horizontally in a row for sequential execution. Each block has a
+tab at the bottom and a notch at the top, allowing them to snap together in a linear sequence. This
+design makes it clear which blocks will execute in order.
 
 ### c. Brick Interactions
 
@@ -59,8 +74,11 @@
 
      ![dedicated editors](../images/image-5.png)
 - **Connection Types**:
-     1. **Argument Connections**: Bricks can be connected to input arguments of other bricks. This allows for passing data or parameters into the brick’s function.
-     2. **Brick-to-Brick or Stack Connections**: Bricks can be connected directly to other bricks or to a stack of bricks. This enables building complex sequences and structures by chaining bricks together.
+     1. **Argument Connections**: Bricks can be connected to input arguments of other bricks. This
+     allows for passing data or parameters into the brick’s function.
+     2. **Brick-to-Brick or Stack Connections**: Bricks can be connected directly to other bricks or
+      to a stack of bricks. This enables building complex sequences and structures by chainingbricks
+       together.
 
         ![alt text](../images/image-8.png)
 
@@ -120,7 +138,8 @@
   - Searchbar design to be implemented:
 
       ![alt text](../images/image-17.png)
-          The idea here is to have a fixed searchbar on the left side of the workspace through which users can search for bricks, group them etc.
+          The idea here is to have a fixed searchbar on the left side of the workspace through which
+           users can search for bricks, group them etc.
           Note - It is just a one big list and categories on the left are positions on the list.
 
 ### d. **Drag and Drop**
@@ -130,7 +149,8 @@
 
      ![drag and drop](../images/image-12.png)
 
-  - While dragging a brick from the palette, the brick should temporarily disappear from the palette until it is placed in the workspace.
+  - While dragging a brick from the palette, the brick should temporarily disappear from the palette
+   until it is placed in the workspace.
 
 ## 4. Workspace
 

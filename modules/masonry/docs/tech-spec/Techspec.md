@@ -2,7 +2,7 @@
 
 ## Palette
 
-#### Config (Inputs)
+### Config (Inputs)
 
 - **Categories**:
   - **Attributes**: names, icons
@@ -11,14 +11,14 @@
     - **Bricks**:
       - **Attributes**: id, name, description, thumbnail, BBox
 
-#### Search
+### Search
 
 - **Search text**:
   - Substring match on name
   - Substring match on description
   - Minimum 3 characters
 
-#### Drag & Drop
+### Drag & Drop
 
 - **For a brick**:
   1. Start drag operation
@@ -35,7 +35,7 @@
 
 ## Brick
 
-#### Brick Types
+### Brick Types
 
 - **Data Bricks**
   - Returns values
@@ -54,7 +54,7 @@
   - Connects with other statement/block types
   - Can take 0 or more arguments
 
-#### Brick Appearance
+### Brick Appearance
 
 - **Attributes**:
   - Color
@@ -63,13 +63,13 @@
   - Any labels (copied)
   - Any connectors
 
-#### Brick Interactions
+### Brick Interactions
 
 - **Inline Edit**:
   - Only applicable to Data bricks
   - Example: input text
 
-#### Brick Structure Overview
+### Brick Structure Overview
 
 - **Brick**:
   - Color
@@ -92,7 +92,8 @@
 
 - **Visual Feedback**:
   - Indicators show whether brick combinations are valid.
-  - Example: A green outline appears for a valid connection, while a red outline indicates an invalid connection.
+  - Example: A green outline appears for a valid connection, while a red outline indicates an
+   invalid connection.
 - **Error Indicators**:
   - Provide explanations for incompatible connections to help users troubleshoot.
   - Example: A reddish boundary and error message explain why the connection is invalid.

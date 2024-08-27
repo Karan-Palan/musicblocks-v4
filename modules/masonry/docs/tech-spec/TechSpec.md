@@ -1,10 +1,11 @@
 # Masonry Framework Tech Spec
 
-This tech spec outlines the implementation details for the Masonry Framework, a core component of the MusicBlocks V4 project built with React and TypeScript.
+This tech spec outlines the implementation details for the Masonry Framework, a core component of
+the MusicBlocks V4 project built with React and TypeScript.
 
 ## Project Structure
 
-```
+```md
 ├── src
 │   ├── utils
 │   │   ├── dragAndDropUtils.ts
@@ -64,7 +65,7 @@ This tech spec outlines the implementation details for the Masonry Framework, a 
 
 ### Components
 
-#### a) Brick
+#### a Brick
 
 - **Brick.tsx:**
   - Properties:
@@ -122,7 +123,8 @@ This tech spec outlines the implementation details for the Masonry Framework, a 
     - `onInputChange`: Callback for input change event.
     - `onOutputChange`: Callback for output change event.
   - Functions:
-    - `render()`: Renders the expression brick component with its visual appearance and input/output ports.
+    - `render()`: Renders the expression brick component with its visual appearance and input/output
+     ports.
     - `handleInputChange()`: Handles the input change event for the expression brick.
     - `handleOutputChange()`: Handles the output change event for the expression brick.
 - **StatementBrick.tsx:**
@@ -147,7 +149,7 @@ This tech spec outlines the implementation details for the Masonry Framework, a 
     - `handleNesting()`: Handles the nesting logic for nested bricks.
     - `handleArguments()`: Manages the arguments for block bricks.
 
-#### b) Palette
+#### b Palette
 
 - **Palette.tsx:**
   - Properties:
@@ -177,7 +179,7 @@ This tech spec outlines the implementation details for the Masonry Framework, a 
     - `render()`: Renders the search component with its visual appearance and input field.
     - `handleSearch()`: Handles the search event for the search component.
 
-#### c) Workspace
+#### c Workspace
 
 - **Workspace.tsx:**
   - Properties:
@@ -297,10 +299,6 @@ This tech spec outlines the implementation details for the Masonry Framework, a 
     - `handleBrickMove()`: A function to handle moving a brick in the workspace.
     - `handleBrickResize()`: A function to handle resizing a brick in the workspace.
     - `handleBrickRotate()`: A function to handle rotating a brick in the workspace.
-
-### Models
-
-Certainly! Below, I'll expand on the properties and functionalities of the `Brick` model to include bounding boxes (b-boxes) and related methods:
 
 ### Models
 
