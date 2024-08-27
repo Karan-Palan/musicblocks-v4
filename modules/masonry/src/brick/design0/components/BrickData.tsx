@@ -1,6 +1,8 @@
 import type { JSX } from 'react';
 import type { IBrickData, TBrickCoords } from '@/@types/brick';
 
+// -------------------------------------------------------------------------------------------------
+
 export default function ({
   instance,
   coords = { x: 0, y: 0 },
