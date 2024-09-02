@@ -3,7 +3,7 @@ import {
     createBrickData,
     createBrickExpression,
     createBrickStatement,
-} from './BrickFactory';
+} from './brickFactory';
 import BrickBlock from './BrickBlock';
 import BrickData from './BrickData';
 import BrickExpression from './BrickExpression';

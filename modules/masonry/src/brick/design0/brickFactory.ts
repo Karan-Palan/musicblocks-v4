@@ -4,6 +4,7 @@ import BrickStatement from './BrickStatement';
 import BrickExpression from './BrickExpression';
 import BrickData from './BrickData';
 import BrickBlock from './BrickBlock';
+import { addBrickToWarehouse } from './brickWarehouse';
 
 /**
  * Factory function to create a new BrickBlock instance.
@@ -30,10 +31,12 @@ export function createBrickBlock(params: {
     connectBelow: boolean;
     nestLengthY: number;
 }): BrickBlock {
-    return new BrickBlock({
+    const brick = new BrickBlock({
         id: uuidv4(),
         ...params,
     });
+    addBrickToWarehouse(brick);
+    return brick;
 }
 
 /**
@@ -54,10 +57,12 @@ export function createBrickData(params: {
     outline: TBrickColor;
     scale: number;
 }): BrickData {
-    return new BrickData({
+    const brick = new BrickData({
         id: uuidv4(),
         ...params,
     });
+    addBrickToWarehouse(brick);
+    return brick;
 }
 
 /**
@@ -83,10 +88,12 @@ export function createBrickExpression(params: {
     outline: TBrickColor;
     scale: number;
 }): BrickExpression {
-    return new BrickExpression({
+    const brick = new BrickExpression({
         id: uuidv4(),
         ...params,
     });
+    addBrickToWarehouse(brick);
+    return brick;
 }
 
 /**
@@ -113,8 +120,10 @@ export function createBrickStatement(params: {
     connectAbove: boolean;
     connectBelow: boolean;
 }): BrickStatement {
-    return new BrickStatement({
+    const brick = new BrickStatement({
         id: uuidv4(),
         ...params,
     });
+    addBrickToWarehouse(brick);
+    return brick;
 }
