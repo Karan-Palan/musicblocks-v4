@@ -1,5 +1,5 @@
 import type { DOMAttributes, JSX } from 'react';
-import type { Brick } from '../pages/workspace/data';
+import type { Brick } from './data';
 
 // -------------------------------------------------------------------------------------------------
 
