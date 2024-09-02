@@ -11,9 +11,11 @@ import { generatePath } from '../utils/path';
  */
 export default class BrickData extends BrickModelData {
     readonly _pathResults: ReturnType<typeof generatePath>;
+    readonly id: string;
 
     constructor(params: {
         // intrinsic
+        id: string;
         name: string;
         label: string;
         glyph: string;
@@ -21,13 +23,13 @@ export default class BrickData extends BrickModelData {
         dynamic: boolean;
         value?: boolean | number | string;
         input?: 'boolean' | 'number' | 'string' | 'options';
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
         outline: TBrickColor;
         scale: number;
     }) {
         super(params);
+        this.id = params.id;
         this._pathResults = generatePath({
             hasNest: false,
             hasNotchArg: true,

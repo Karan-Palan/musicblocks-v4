@@ -1,5 +1,4 @@
 import type { TBrickArgDataType, TBrickColor, TBrickCoords, TBrickExtent } from '@/@types/brick';
-
 import { BrickModelExpression } from '../model';
 import { generatePath } from '../utils/path';
 
@@ -11,9 +10,11 @@ import { generatePath } from '../utils/path';
  */
 export default class BrickExpression extends BrickModelExpression {
     readonly _pathResults: ReturnType<typeof generatePath>;
+    readonly id: string;
 
     constructor(params: {
         // intrinsic
+        id: string;
         name: string;
         label: string;
         glyph: string;
@@ -33,6 +34,7 @@ export default class BrickExpression extends BrickModelExpression {
         scale: number;
     }) {
         super(params);
+        this.id = params.id;
         const argsKeys = Object.keys(this._args);
         this._pathResults = generatePath({
             hasNest: false,

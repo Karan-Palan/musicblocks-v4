@@ -11,9 +11,11 @@ import { generatePath } from '../utils/path';
  */
 export default class BrickBlock extends BrickModelBlock {
     readonly _pathResults: ReturnType<typeof generatePath>;
+    readonly id: string;
 
     constructor(params: {
         // intrinsic
+        id: string;
         name: string;
         label: string;
         glyph: string;
@@ -25,7 +27,6 @@ export default class BrickBlock extends BrickModelBlock {
                 meta: unknown;
             }
         >;
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
         outline: TBrickColor;
@@ -35,6 +36,7 @@ export default class BrickBlock extends BrickModelBlock {
         nestLengthY: number;
     }) {
         super(params);
+        this.id = params.id;
         const argsKeys = Object.keys(this._args);
         this._pathResults = generatePath({
             hasNest: true,

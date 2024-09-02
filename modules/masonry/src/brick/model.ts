@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import type {
     IBrick,
     IBrickArgument,
@@ -49,7 +50,7 @@ abstract class BrickModel implements IBrick {
         outline: TBrickColor;
         scale: number;
     }) {
-        this._uuid = '';
+        this._uuid = uuidv4();
         this._name = params.name;
         this._kind = params.kind;
         this._type = params.type;
