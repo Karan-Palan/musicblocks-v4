@@ -14,8 +14,6 @@ import type {
     TBrickType,
 } from '@/@types/brick';
 
-// -- protected classes ------------------------------------------------------------------------------
-
 /**
  * @abstract
  * @class
@@ -38,6 +36,12 @@ abstract class BrickModel implements IBrick {
 
     public highlighted = false;
     protected _scale: number;
+
+    // Common connection points
+    protected _connectionPoints: {
+        ArgsIncoming?: TBrickCoords[];
+        ArgsOutgoing?: TBrickCoords[];
+    };
 
     constructor(params: {
         name: string;
@@ -64,6 +68,7 @@ abstract class BrickModel implements IBrick {
         this._colorFgHighlight = params.colorFgHighlight;
         this._outline = params.outline;
         this._scale = params.scale;
+        this._connectionPoints = {};
     }
 
     // Getters
@@ -103,9 +108,17 @@ abstract class BrickModel implements IBrick {
     public get scale(): number {
         return this._scale;
     }
+    public get connectionPoints(): {
+        ArgsIncoming?: TBrickCoords[];
+        ArgsOutgoing?: TBrickCoords[];
+    } {
+        return this._connectionPoints;
+    }
 
     public abstract get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords };
     public abstract get SVGpath(): string;
+
+    protected abstract updateConnectionPoints(): void;
 }
 
 /**
@@ -201,8 +214,6 @@ abstract class BrickModelInstruction extends BrickModel implements IBrickInstruc
     public abstract get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }>;
 }
 
-// -- public classes -------------------------------------------------------------------------------
-
 /**
  * @abstract
  * @class
@@ -232,6 +243,8 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
         this._dynamic = params.dynamic;
         this._value = params.value;
         this._input = params.input;
+        this._connectionPoints.ArgsOutgoing = [];
+        this.updateConnectionPoints();
     }
 
     public get dynamic(): boolean {
@@ -243,6 +256,8 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
     public get input(): 'boolean' | 'number' | 'string' | 'options' | undefined {
         return this._input;
     }
+
+    protected abstract updateConnectionPoints(): void;
 }
 
 /**
@@ -268,6 +283,9 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
     }) {
         super({ ...params, type: 'expression' });
         this._args = params.args;
+        this._connectionPoints.ArgsIncoming = [];
+        this._connectionPoints.ArgsOutgoing = [];
+        this.updateConnectionPoints();
     }
 
     public get args(): Record<
@@ -278,6 +296,8 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
     }
 
     public abstract get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }>;
+
+    protected abstract updateConnectionPoints(): void;
 }
 
 /**
@@ -301,7 +321,11 @@ export abstract class BrickModelStatement extends BrickModelInstruction implemen
         connectBelow: boolean;
     }) {
         super({ ...params, type: 'statement' });
+        this._connectionPoints.ArgsOutgoing = [];
+        this.updateConnectionPoints();
     }
+
+    protected abstract updateConnectionPoints(): void;
 }
 
 /**
@@ -313,6 +337,12 @@ export abstract class BrickModelBlock extends BrickModelInstruction implements I
     public nestExtent: TBrickExtent = { width: 0, height: 0 };
     public collapsed = false;
     protected _folded = false;
+
+    protected _connectionPointsBlock: {
+        Top: TBrickCoords[];
+        Bottom: TBrickCoords[];
+        TopInner: TBrickCoords[];
+    };
 
     constructor(params: {
         name: string;
@@ -340,14 +370,27 @@ export abstract class BrickModelBlock extends BrickModelInstruction implements I
         connectBelow: boolean;
     }) {
         super({ ...params, type: 'block' });
+        this._connectionPointsBlock = {
+            Top: [],
+            Bottom: [],
+            TopInner: [],
+        };
+        this._connectionPoints.ArgsIncoming = [];
+        this.updateConnectionPoints();
     }
 
     public get folded(): boolean {
         return this._folded;
     }
-    public set folded(value: boolean) {
-        this._folded = value;
+    public get connectionPointsBlock(): {
+        Top: TBrickCoords[];
+        Bottom: TBrickCoords[];
+        TopInner: TBrickCoords[];
+    } {
+        return this._connectionPointsBlock;
     }
 
     public abstract get bBoxNotchInsNestTop(): { extent: TBrickExtent; coords: TBrickCoords };
+
+    protected abstract updateConnectionPoints(): void;
 }
