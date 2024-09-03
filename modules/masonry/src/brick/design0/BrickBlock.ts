@@ -19,14 +19,11 @@ export default class BrickBlock extends BrickModelBlock {
         name: string;
         label: string;
         glyph: string;
-        args: Record<
-            string,
-            {
-                argId: string;
-                argLabel: string;
-                argTypeIncoming: TBrickArgDataType;
-            }
-        >;
+        args: Array<{
+            argId: string;
+            argLabel: string;
+            argTypeIncoming: TBrickArgDataType;
+        }>;
         colorBg: TBrickColor;
         colorFg: TBrickColor;
         outline: TBrickColor;
@@ -43,15 +40,24 @@ export default class BrickBlock extends BrickModelBlock {
             name: params.name,
             label: params.label,
             glyph: params.glyph,
-            args: Object.fromEntries(
-                Object.entries(params.args).map(([key, value]) => [
-                    key,
-                    {
-                        label: value.argLabel,
-                        dataType: value.argTypeIncoming,
+            // Convert array to object for super call
+            args: params.args.reduce(
+                (acc, arg) => {
+                    acc[arg.argId] = {
+                        label: arg.argLabel,
+                        dataType: arg.argTypeIncoming,
                         meta: {},
-                    },
-                ]),
+                    };
+                    return acc;
+                },
+                {} as Record<
+                    string,
+                    {
+                        label: string;
+                        dataType: TBrickArgDataType;
+                        meta: Record<string, unknown>;
+                    }
+                >,
             ),
             colorBg: params.colorBg,
             colorFg: params.colorFg,
@@ -75,7 +81,7 @@ export default class BrickBlock extends BrickModelBlock {
             scale: params.scale,
             nestLengthY: params.nestLengthY,
             innerLengthX: 100,
-            argHeights: Array(Object.keys(params.args).length).fill(17),
+            argHeights: Array(params.args.length).fill(17),
         });
     }
 
@@ -165,61 +171,7 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
-    public get instantiationProperties(): {
-        id: string;
-        name: string;
-        label: string;
-        glyph: string;
-        args: Record<
-            string,
-            {
-                argId: string;
-                argLabel: string;
-                argTypeIncoming: TBrickArgDataType;
-            }
-        >;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
-        connectAbove: boolean;
-        connectBelow: boolean;
-        highlighted: boolean;
-        argExtents: Record<string, { argLengthX?: number; argLengthY: number }>;
-        folded: boolean;
-    } {
-        return {
-            id: this.id,
-            name: this.name,
-            label: this.label,
-            glyph: this.glyph,
-            args: Object.fromEntries(
-                Object.entries(this._args).map(([key, value]) => [
-                    key,
-                    {
-                        argId: value.label,
-                        argLabel: value.label,
-                        argTypeIncoming: value.dataType,
-                    },
-                ]),
-            ),
-            colorBg: this.colorBg,
-            colorFg: this.colorFg,
-            colorBgHighlight: this.colorBgHighlight,
-            colorFgHighlight: this.colorFgHighlight,
-            outline: this.outline,
-            scale: this._scale,
-            connectAbove: this.connectAbove,
-            connectBelow: this.connectBelow,
-            highlighted: this.highlighted,
-            argExtents: this._argExtents,
-            folded: this._folded,
-        };
-    }
-
-    public get renderProperties(): {
+    public get calculatedProperties(): {
         boundingBox: { extent: TBrickExtent; coords: TBrickCoords };
         connectionPoints: {
             Top: { extent: TBrickExtent; coords: TBrickCoords } | null;
@@ -237,5 +189,63 @@ export default class BrickBlock extends BrickModelBlock {
                 ArgsIncoming: this.bBoxNotchArg,
             },
         };
+    }
+
+    public get currentState(): {
+        id: string;
+        name: string;
+        label: string;
+        glyph: string;
+        args: Array<{
+            argId: string;
+            argLabel: string;
+            argTypeIncoming: TBrickArgDataType;
+        }>;
+        colorBg: TBrickColor;
+        colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
+        outline: TBrickColor;
+        scale: number;
+        connectAbove: boolean;
+        connectBelow: boolean;
+        highlighted: boolean;
+        argExtents: Record<string, { argLengthX?: number; argLengthY: number }>;
+        folded: boolean;
+    } {
+        return {
+            id: this.id,
+            name: this.name,
+            label: this.label,
+            glyph: this.glyph,
+            args: Object.entries(this._args).map(([key, value]) => ({
+                argId: key,
+                argLabel: value.label,
+                argTypeIncoming: value.dataType,
+            })),
+            colorBg: this.colorBg,
+            colorFg: this.colorFg,
+            colorBgHighlight: this.colorBgHighlight,
+            colorFgHighlight: this.colorFgHighlight,
+            outline: this.outline,
+            scale: this._scale,
+            connectAbove: this.connectAbove,
+            connectBelow: this.connectBelow,
+            highlighted: this.highlighted,
+            argExtents: this._argExtents,
+            folded: this._folded,
+        };
+    }
+
+    public setHighlighted(value: boolean): void {
+        this.highlighted = value;
+    }
+
+    public setFolded(value: boolean): void {
+        this._folded = value;
+    }
+
+    public setArgExtent(argId: string, extent: { argLengthX?: number; argLengthY: number }): void {
+        this._argExtents[argId] = extent;
     }
 }
