@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import type {
     IBrick,
     IBrickArgument,
@@ -23,34 +22,37 @@ import type {
  * Defines the data model of a generic brick.
  */
 abstract class BrickModel implements IBrick {
+    // intrinsic
     protected _uuid: string;
     protected _name: string;
     protected _kind: TBrickKind;
     protected _type: TBrickType;
     protected _label: string;
     protected _glyph: string;
-
+    // style
     protected _colorBg: TBrickColor;
     protected _colorFg: TBrickColor;
+    protected _colorBgHighlight: TBrickColor;
+    protected _colorFgHighlight: TBrickColor;
     protected _outline: TBrickColor;
-    protected _scale: number;
 
     public highlighted = false;
+    protected _scale: number;
 
     constructor(params: {
-        // intrinsic
         name: string;
         kind: TBrickKind;
         type: TBrickType;
         label: string;
         glyph: string;
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
     }) {
-        this._uuid = uuidv4();
+        this._uuid = '';
         this._name = params.name;
         this._kind = params.kind;
         this._type = params.type;
@@ -58,52 +60,51 @@ abstract class BrickModel implements IBrick {
         this._glyph = params.glyph;
         this._colorBg = params.colorBg;
         this._colorFg = params.colorFg;
+        this._colorBgHighlight = params.colorBgHighlight;
+        this._colorFgHighlight = params.colorFgHighlight;
         this._outline = params.outline;
         this._scale = params.scale;
     }
 
+    // Getters
     public get uuid(): string {
         return this._uuid;
     }
-
     public get name(): string {
         return this._name;
     }
-
     public get kind(): TBrickKind {
         return this._kind;
     }
-
     public get type(): TBrickType {
         return this._type;
     }
-
     public get label(): string {
         return this._label;
     }
-
     public get glyph(): string {
         return this._glyph;
     }
-
     public get colorBg(): TBrickColor {
         return this._colorBg;
     }
-
     public get colorFg(): TBrickColor {
         return this._colorFg;
     }
-
+    public get colorBgHighlight(): TBrickColor {
+        return this._colorBgHighlight;
+    }
+    public get colorFgHighlight(): TBrickColor {
+        return this._colorFgHighlight;
+    }
     public get outline(): TBrickColor {
         return this._outline;
     }
-
     public get scale(): number {
         return this._scale;
     }
 
     public abstract get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords };
-
     public abstract get SVGpath(): string;
 }
 
@@ -114,6 +115,7 @@ abstract class BrickModel implements IBrick {
  */
 abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
     protected _dataType: TBrickArgDataType;
+    protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
 
     constructor(params: {
         // intrinsic
@@ -125,16 +127,20 @@ abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
         // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
     }) {
         super({ ...params, kind: 'argument' });
-
         this._dataType = params.dataType;
     }
 
     public get dataType(): TBrickArgDataType {
         return this._dataType;
+    }
+    public get argExtents(): Map<string, { argLengthX?: number; argLengthY: number }> {
+        return this._argExtents;
     }
 
     public abstract get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords };
@@ -146,17 +152,10 @@ abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
  * Defines the data model of a generic instruction brick.
  */
 abstract class BrickModelInstruction extends BrickModel implements IBrickInstruction {
-    protected _args: Record<
-        string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
-    >;
-
+    protected _args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
     protected _connectAbove: boolean;
     protected _connectBelow: boolean;
+    protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
 
     constructor(params: {
         // intrinsic
@@ -164,24 +163,18 @@ abstract class BrickModelInstruction extends BrickModel implements IBrickInstruc
         type: TBrickType;
         label: string;
         glyph: string;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: TBrickArgDataType;
-                meta: unknown;
-            }
-        >;
+        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
         // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
         connectAbove: boolean;
         connectBelow: boolean;
     }) {
         super({ ...params, kind: 'instruction' });
-
         this._args = params.args;
         this._connectAbove = params.connectAbove;
         this._connectBelow = params.connectBelow;
@@ -189,27 +182,22 @@ abstract class BrickModelInstruction extends BrickModel implements IBrickInstruc
 
     public get args(): Record<
         string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
+        { label: string; dataType: TBrickArgDataType; meta: unknown }
     > {
         return this._args;
     }
-
     public get connectAbove(): boolean {
         return this._connectAbove;
     }
-
     public get connectBelow(): boolean {
         return this._connectBelow;
     }
+    public get argExtents(): Map<string, { argLengthX?: number; argLengthY: number }> {
+        return this._argExtents;
+    }
 
     public abstract get bBoxNotchInsTop(): { extent: TBrickExtent; coords: TBrickCoords };
-
     public abstract get bBoxNotchInsBot(): { extent: TBrickExtent; coords: TBrickCoords };
-
     public abstract get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }>;
 }
 
@@ -226,7 +214,6 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
     protected _input?: 'boolean' | 'number' | 'string' | 'options';
 
     constructor(params: {
-        // intrinsic
         name: string;
         label: string;
         glyph: string;
@@ -234,14 +221,14 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
         dynamic: boolean;
         value?: boolean | number | string;
         input?: 'boolean' | 'number' | 'string' | 'options';
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
     }) {
         super({ ...params, type: 'data' });
-
         this._dynamic = params.dynamic;
         this._value = params.value;
         this._input = params.input;
@@ -250,11 +237,9 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
     public get dynamic(): boolean {
         return this._dynamic;
     }
-
     public get value(): boolean | number | string | undefined {
         return this._value;
     }
-
     public get input(): 'boolean' | 'number' | 'string' | 'options' | undefined {
         return this._input;
     }
@@ -266,47 +251,28 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
  * Defines the data model of an expression brick.
  */
 export abstract class BrickModelExpression extends BrickModelArgument implements IBrickExpression {
-    protected _args: Record<
-        string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
-    >;
+    protected _args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
 
     constructor(params: {
-        // intrinsic
         name: string;
         label: string;
         glyph: string;
         dataType: TBrickArgDataType;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: TBrickArgDataType;
-                meta: unknown;
-            }
-        >;
-        // style
+        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
     }) {
         super({ ...params, type: 'expression' });
-
         this._args = params.args;
     }
 
     public get args(): Record<
         string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
+        { label: string; dataType: TBrickArgDataType; meta: unknown }
     > {
         return this._args;
     }
@@ -321,21 +287,14 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
  */
 export abstract class BrickModelStatement extends BrickModelInstruction implements IBrickStatement {
     constructor(params: {
-        // intrinsic
         name: string;
         label: string;
         glyph: string;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: TBrickArgDataType;
-                meta: unknown;
-            }
-        >;
-        // style
+        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
         connectAbove: boolean;
@@ -353,9 +312,9 @@ export abstract class BrickModelStatement extends BrickModelInstruction implemen
 export abstract class BrickModelBlock extends BrickModelInstruction implements IBrickBlock {
     public nestExtent: TBrickExtent = { width: 0, height: 0 };
     public collapsed = false;
+    protected _folded = false;
 
     constructor(params: {
-        // intrinsic
         name: string;
         label: string;
         glyph: string;
@@ -364,18 +323,30 @@ export abstract class BrickModelBlock extends BrickModelInstruction implements I
             {
                 label: string;
                 dataType: TBrickArgDataType;
-                meta: unknown;
+                meta: {
+                    argId: string;
+                    argLabel: string;
+                    argTypeIncoming: string;
+                };
             }
         >;
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
+        colorBgHighlight: TBrickColor;
+        colorFgHighlight: TBrickColor;
         outline: TBrickColor;
         scale: number;
         connectAbove: boolean;
         connectBelow: boolean;
     }) {
         super({ ...params, type: 'block' });
+    }
+
+    public get folded(): boolean {
+        return this._folded;
+    }
+    public set folded(value: boolean) {
+        this._folded = value;
     }
 
     public abstract get bBoxNotchInsNestTop(): { extent: TBrickExtent; coords: TBrickCoords };
