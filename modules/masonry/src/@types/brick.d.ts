@@ -208,7 +208,7 @@ export interface IBrickBlock extends IBrickInstruction, IBrickNotchInsNestTopSta
     /** combined bounding box of the instructions nested within the brick */
     get nestExtent(): TBrickExtent;
     /** whether brick nesting is hidden */
-    collapsed: boolean;
+    folded: boolean;
 
     /** Bounding box dimensions and coords of the top instruction notch of the nesting */
     get bBoxNotchInsNestTop(): {

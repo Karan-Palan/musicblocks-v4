@@ -335,7 +335,6 @@ export abstract class BrickModelStatement extends BrickModelInstruction implemen
  */
 export abstract class BrickModelBlock extends BrickModelInstruction implements IBrickBlock {
     public nestExtent: TBrickExtent = { width: 0, height: 0 };
-    public collapsed = false;
     protected _folded = false;
 
     protected _connectionPointsBlock: {
@@ -382,6 +381,7 @@ export abstract class BrickModelBlock extends BrickModelInstruction implements I
     public get folded(): boolean {
         return this._folded;
     }
+
     public get connectionPointsBlock(): {
         Top: TBrickCoords[];
         Bottom: TBrickCoords[];
