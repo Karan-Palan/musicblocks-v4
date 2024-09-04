@@ -4,7 +4,40 @@ import BrickStatement from './BrickStatement';
 import BrickExpression from './BrickExpression';
 import BrickData from './BrickData';
 import BrickBlock from './BrickBlock';
-import { addBrickToWarehouse } from './brickWarehouse';
+
+// Warehouse to manage brick instances
+const brickWarehouse: Map<string, BrickStatement | BrickExpression | BrickData | BrickBlock> =
+    new Map();
+
+/**
+ * Adds a brick instance to the warehouse.
+ * @param brick - The brick instance to add.
+ */
+function addBrickToWarehouse(
+    brick: BrickStatement | BrickExpression | BrickData | BrickBlock,
+): void {
+    brickWarehouse.set(brick.uuid, brick);
+}
+
+/**
+ * Retrieves a brick instance from the warehouse by its ID.
+ * @param id - The ID of the brick to retrieve.
+ * @returns The brick instance if found, otherwise undefined.
+ */
+function getBrickFromWarehouse(
+    id: string,
+): BrickStatement | BrickExpression | BrickData | BrickBlock | undefined {
+    return brickWarehouse.get(id);
+}
+
+/**
+ * Deletes a brick instance from the warehouse by its ID.
+ * @param id - The ID of the brick to delete.
+ * @returns True if the brick was deleted, false if it was not found.
+ */
+function deleteBrickFromWarehouse(id: string): boolean {
+    return brickWarehouse.delete(id);
+}
 
 /**
  * Factory function to create a new BrickBlock instance.
@@ -20,19 +53,26 @@ export function createBrickBlock(params: {
         {
             label: string;
             dataType: TBrickArgDataType;
-            meta: unknown;
+            meta: {
+                argId: string;
+                argLabel: string;
+                argTypeIncoming: string;
+            };
         }
     >;
     colorBg: TBrickColor;
     colorFg: TBrickColor;
+    colorBgHighlight: TBrickColor;
+    colorFgHighlight: TBrickColor;
     outline: TBrickColor;
     scale: number;
     connectAbove: boolean;
     connectBelow: boolean;
     nestLengthY: number;
+    folded?: boolean;
 }): BrickBlock {
     const brick = new BrickBlock({
-        id: uuidv4(),
+        uuid: uuidv4(),
         ...params,
     });
     addBrickToWarehouse(brick);
@@ -54,11 +94,13 @@ export function createBrickData(params: {
     input?: 'boolean' | 'number' | 'string' | 'options';
     colorBg: TBrickColor;
     colorFg: TBrickColor;
+    colorBgHighlight: TBrickColor;
+    colorFgHighlight: TBrickColor;
     outline: TBrickColor;
     scale: number;
 }): BrickData {
     const brick = new BrickData({
-        id: uuidv4(),
+        uuid: uuidv4(),
         ...params,
     });
     addBrickToWarehouse(brick);
@@ -85,11 +127,13 @@ export function createBrickExpression(params: {
     >;
     colorBg: TBrickColor;
     colorFg: TBrickColor;
+    colorBgHighlight: TBrickColor;
+    colorFgHighlight: TBrickColor;
     outline: TBrickColor;
     scale: number;
 }): BrickExpression {
     const brick = new BrickExpression({
-        id: uuidv4(),
+        uuid: uuidv4(),
         ...params,
     });
     addBrickToWarehouse(brick);
@@ -115,15 +159,20 @@ export function createBrickStatement(params: {
     >;
     colorBg: TBrickColor;
     colorFg: TBrickColor;
+    colorBgHighlight: TBrickColor;
+    colorFgHighlight: TBrickColor;
     outline: TBrickColor;
     scale: number;
     connectAbove: boolean;
     connectBelow: boolean;
 }): BrickStatement {
     const brick = new BrickStatement({
-        id: uuidv4(),
+        uuid: uuidv4(),
         ...params,
     });
     addBrickToWarehouse(brick);
     return brick;
 }
+
+// Exporting warehouse functions for external use
+export { addBrickToWarehouse, getBrickFromWarehouse, deleteBrickFromWarehouse };
