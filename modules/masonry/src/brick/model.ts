@@ -44,6 +44,7 @@ abstract class BrickModel implements IBrick {
     };
 
     constructor(params: {
+        uuid: string;
         name: string;
         kind: TBrickKind;
         type: TBrickType;
@@ -56,7 +57,7 @@ abstract class BrickModel implements IBrick {
         outline: TBrickColor;
         scale: number;
     }) {
-        this._uuid = '';
+        this._uuid = params.uuid;
         this._name = params.name;
         this._kind = params.kind;
         this._type = params.type;
@@ -131,13 +132,12 @@ abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
     protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
 
     constructor(params: {
-        // intrinsic
-        name: string;
+        uuid: string; // Added uuid
+        name: string; // Added name
         type: TBrickType;
         label: string;
         glyph: string;
         dataType: TBrickArgDataType;
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
         colorBgHighlight: TBrickColor;
@@ -171,13 +171,12 @@ abstract class BrickModelInstruction extends BrickModel implements IBrickInstruc
     protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
 
     constructor(params: {
-        // intrinsic
-        name: string;
+        uuid: string; // Added uuid
+        name: string; // Added name
         type: TBrickType;
         label: string;
         glyph: string;
         args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
-        // style
         colorBg: TBrickColor;
         colorFg: TBrickColor;
         colorBgHighlight: TBrickColor;
@@ -225,6 +224,7 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
     protected _input?: 'boolean' | 'number' | 'string' | 'options';
 
     constructor(params: {
+        uuid: string; // Added uuid
         name: string;
         label: string;
         glyph: string;
@@ -269,6 +269,7 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
     protected _args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
 
     constructor(params: {
+        uuid: string; // Added uuid
         name: string;
         label: string;
         glyph: string;
@@ -307,6 +308,7 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
  */
 export abstract class BrickModelStatement extends BrickModelInstruction implements IBrickStatement {
     constructor(params: {
+        uuid: string; // Added uuid
         name: string;
         label: string;
         glyph: string;
@@ -344,6 +346,7 @@ export abstract class BrickModelBlock extends BrickModelInstruction implements I
     };
 
     constructor(params: {
+        uuid: string; // Added uuid
         name: string;
         label: string;
         glyph: string;

@@ -2,93 +2,66 @@ import type { TBrickArgDataType, TBrickColor, TBrickCoords, TBrickExtent } from 
 import { BrickModelBlock } from '../model';
 import { generatePath } from '../utils/path';
 
+// -------------------------------------------------------------------------------------------------
+
 /**
- * Defines a block brick, extending `BrickModelBlock`.
+ * @class
+ * Final class that defines a block brick.
  */
 export default class BrickBlock extends BrickModelBlock {
     readonly _pathResults: ReturnType<typeof generatePath>;
-    readonly id: string;
-    readonly colorBgHighlight: TBrickColor;
-    readonly colorFgHighlight: TBrickColor;
-    public highlighted: boolean;
-    private _argExtents: Record<string, { argLengthX?: number; argLengthY: number }> = {};
-    private _folded: boolean;
 
     constructor(params: {
-        id: string;
+        uuid: string;
         name: string;
         label: string;
         glyph: string;
-        args: Array<{
-            argId: string;
-            argLabel: string;
-            argTypeIncoming: TBrickArgDataType;
-        }>;
+        args: Record<
+            string,
+            {
+                label: string;
+                dataType: TBrickArgDataType;
+                meta: {
+                    argId: string;
+                    argLabel: string;
+                    argTypeIncoming: string;
+                };
+            }
+        >;
         colorBg: TBrickColor;
         colorFg: TBrickColor;
-        outline: TBrickColor;
         colorBgHighlight: TBrickColor;
         colorFgHighlight: TBrickColor;
+        outline: TBrickColor;
         scale: number;
         connectAbove: boolean;
         connectBelow: boolean;
         nestLengthY: number;
-        folded?: boolean;
-        highlighted?: boolean;
+        folded?: boolean; // Made folded optional
     }) {
-        super({
-            name: params.name,
-            label: params.label,
-            glyph: params.glyph,
-            // Convert array to object for super call
-            args: params.args.reduce(
-                (acc, arg) => {
-                    acc[arg.argId] = {
-                        label: arg.argLabel,
-                        dataType: arg.argTypeIncoming,
-                        meta: {},
-                    };
-                    return acc;
-                },
-                {} as Record<
-                    string,
-                    {
-                        label: string;
-                        dataType: TBrickArgDataType;
-                        meta: Record<string, unknown>;
-                    }
-                >,
-            ),
-            colorBg: params.colorBg,
-            colorFg: params.colorFg,
-            outline: params.outline,
-            scale: params.scale,
-            connectAbove: params.connectAbove,
-            connectBelow: params.connectBelow,
-        });
-
-        this.id = params.id;
-        this.colorBgHighlight = params.colorBgHighlight;
-        this.colorFgHighlight = params.colorFgHighlight;
-        this.highlighted = params.highlighted ?? false;
-        this._folded = params.folded ?? false;
-
+        super(params);
+        const argsKeys = Object.keys(this._args);
         this._pathResults = generatePath({
             hasNest: true,
             hasNotchArg: false,
-            hasNotchInsTop: params.connectAbove,
-            hasNotchInsBot: params.connectBelow,
-            scale: params.scale,
+            hasNotchInsTop: this._connectAbove,
+            hasNotchInsBot: this._connectBelow,
+            scale: this._scale,
             nestLengthY: params.nestLengthY,
             innerLengthX: 100,
-            argHeights: Array(params.args.length).fill(17),
+            argHeights: Array.from({ length: argsKeys.length }, () => 17),
         });
+
+        // Set folded to its initial state or default to false
+        this._folded = params.folded ?? false;
     }
 
+    // Getter for SVG path
     public get SVGpath(): string {
         return this._pathResults.path;
     }
 
+    // Getter for bounding box of the brick
     public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
         return {
             extent: {
@@ -102,9 +75,12 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
+    // Getter for bounding boxes of the arguments
     public get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }> {
+        const argsKeys = Object.keys(this._args);
         const result: Record<string, { extent: TBrickExtent; coords: TBrickCoords }> = {};
-        Object.keys(this._args).forEach((key, index) => {
+
+        argsKeys.forEach((key, index) => {
             result[key] = {
                 extent: {
                     width: this._pathResults.bBoxArgs.extent.width * this._scale,
@@ -116,9 +92,11 @@ export default class BrickBlock extends BrickModelBlock {
                 },
             };
         });
+
         return result;
     }
 
+    // Getter for bounding box of the argument notch
     public get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords } {
         return {
             extent: {
@@ -132,6 +110,7 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
+    // Getter for bounding box of the top insertion notch
     public get bBoxNotchInsTop(): { extent: TBrickExtent; coords: TBrickCoords } {
         return {
             extent: {
@@ -145,6 +124,7 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
+    // Getter for bounding box of the bottom insertion notch
     public get bBoxNotchInsBot(): { extent: TBrickExtent; coords: TBrickCoords } {
         return {
             extent: {
@@ -158,6 +138,7 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
+    // Getter for bounding box of the nest insertion notch
     public get bBoxNotchInsNestTop(): { extent: TBrickExtent; coords: TBrickCoords } {
         return {
             extent: {
@@ -171,81 +152,64 @@ export default class BrickBlock extends BrickModelBlock {
         };
     }
 
-    public get calculatedProperties(): {
-        boundingBox: { extent: TBrickExtent; coords: TBrickCoords };
-        connectionPoints: {
-            Top: { extent: TBrickExtent; coords: TBrickCoords } | null;
-            Bottom: { extent: TBrickExtent; coords: TBrickCoords } | null;
-            TopInner: { extent: TBrickExtent; coords: TBrickCoords } | null;
-            ArgsIncoming: { extent: TBrickExtent; coords: TBrickCoords } | null;
-        };
-    } {
+    // Method to return React props for the BrickBlock component
+    public getReactProps(): Record<string, unknown> {
         return {
-            boundingBox: this.bBoxBrick,
-            connectionPoints: {
-                Top: this.bBoxNotchInsTop,
-                Bottom: this.bBoxNotchInsBot,
-                TopInner: this.bBoxNotchInsNestTop,
-                ArgsIncoming: this.bBoxNotchArg,
-            },
-        };
-    }
-
-    public get currentState(): {
-        id: string;
-        name: string;
-        label: string;
-        glyph: string;
-        args: Array<{
-            argId: string;
-            argLabel: string;
-            argTypeIncoming: TBrickArgDataType;
-        }>;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
-        connectAbove: boolean;
-        connectBelow: boolean;
-        highlighted: boolean;
-        argExtents: Record<string, { argLengthX?: number; argLengthY: number }>;
-        folded: boolean;
-    } {
-        return {
-            id: this.id,
+            uuid: this.uuid,
             name: this.name,
             label: this.label,
             glyph: this.glyph,
-            args: Object.entries(this._args).map(([key, value]) => ({
-                argId: key,
-                argLabel: value.label,
-                argTypeIncoming: value.dataType,
-            })),
+            args: this.args,
             colorBg: this.colorBg,
             colorFg: this.colorFg,
             colorBgHighlight: this.colorBgHighlight,
             colorFgHighlight: this.colorFgHighlight,
             outline: this.outline,
-            scale: this._scale,
+            scale: this.scale,
             connectAbove: this.connectAbove,
             connectBelow: this.connectBelow,
+            folded: this.folded,
             highlighted: this.highlighted,
-            argExtents: this._argExtents,
-            folded: this._folded,
         };
     }
 
-    public setHighlighted(value: boolean): void {
-        this.highlighted = value;
+    // Setters for properties that can change at runtime
+    public setArgs(
+        args: Record<
+            string,
+            {
+                label: string;
+                dataType: TBrickArgDataType;
+                meta: { argId: string; argLabel: string; argTypeIncoming: string };
+            }
+        >,
+    ): void {
+        this._args = args;
+        this.updateConnectionPoints();
     }
 
-    public setFolded(value: boolean): void {
-        this._folded = value;
+    public setConnectAbove(connectAbove: boolean): void {
+        this._connectAbove = connectAbove;
     }
 
-    public setArgExtent(argId: string, extent: { argLengthX?: number; argLengthY: number }): void {
-        this._argExtents[argId] = extent;
+    public setConnectBelow(connectBelow: boolean): void {
+        this._connectBelow = connectBelow;
+    }
+
+    public setFolded(folded?: boolean): void {
+        // Set folded as optional
+        this._folded = folded ?? false; // Default to false if not provided
+    }
+
+    public setHighlighted(highlighted: boolean): void {
+        this.highlighted = highlighted;
+    }
+
+    // Method to update connection points based on current state
+    protected updateConnectionPoints(): void {
+        // Update the connection points for the top, bottom, and nest of the block
+        this._connectionPointsBlock.Top = this.connectAbove ? [{ x: 0, y: 0 }] : [];
+        this._connectionPointsBlock.Bottom = this.connectBelow ? [{ x: 0, y: 0 }] : [];
+        this._connectionPointsBlock.TopInner = this.folded ? [] : [{ x: 0, y: 0 }];
     }
 }
