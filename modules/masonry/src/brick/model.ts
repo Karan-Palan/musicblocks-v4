@@ -6,12 +6,15 @@ import type {
     IBrickExpression,
     IBrickInstruction,
     IBrickStatement,
-    TBrickArgDataType,
-    TBrickColor,
-    TBrickCoords,
-    TBrickExtent,
+    TBrickRenderPropsData,
+    TBrickRenderPropsExpression,
+    TBrickRenderPropsStatement,
+    TBrickRenderPropsBlock,
     TBrickKind,
     TBrickType,
+    TColor,
+    TCoords,
+    TExtent,
 } from '@/@types/brick';
 
 /**
@@ -20,106 +23,87 @@ import type {
  * Defines the data model of a generic brick.
  */
 abstract class BrickModel implements IBrick {
-    // intrinsic
     protected _uuid: string;
     protected _name: string;
     protected _kind: TBrickKind;
     protected _type: TBrickType;
+
     protected _label: string;
     protected _glyph: string;
-    // style
-    protected _colorBg: TBrickColor;
-    protected _colorFg: TBrickColor;
-    protected _colorBgHighlight: TBrickColor;
-    protected _colorFgHighlight: TBrickColor;
-    protected _outline: TBrickColor;
+    protected _colorBg: TColor;
+    protected _colorFg: TColor;
+    protected _colorBgHighlight: TColor;
+    protected _colorFgHighlight: TColor;
+    protected _outline: TColor;
 
-    public highlighted = false;
-    protected _scale: number;
-
-    // Common connection points
-    protected _connectionPoints: {
-        ArgsIncoming?: TBrickCoords[];
-        ArgsOutgoing?: TBrickCoords[];
-    };
+    protected _highlighted = false;
+    protected _scale = 1;
 
     constructor(params: {
+        /** unique ID */
         uuid: string;
+        /** name — to be used for internal bookkeeping */
         name: string;
+        /** kind — instruction or argument */
         kind: TBrickKind;
+        /** type — data, expression, statement, or block */
         type: TBrickType;
+        /** primary label */
         label: string;
-        glyph: string;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        /** glyph icon associated with the brick */
+        glyph?: string;
+        /** primary background color */
+        colorBg: TColor;
+        /** primary foreground color */
+        colorFg: TColor;
+        /** highlighted state background color */
+        colorBgHighlight: TColor;
+        /** highlighted state foreground color */
+        colorFgHighlight: TColor;
+        /** outline/stroke color */
+        outline: TColor;
     }) {
         this._uuid = params.uuid;
         this._name = params.name;
         this._kind = params.kind;
         this._type = params.type;
+
         this._label = params.label;
-        this._glyph = params.glyph;
+        this._glyph = params.glyph ?? '';
         this._colorBg = params.colorBg;
         this._colorFg = params.colorFg;
         this._colorBgHighlight = params.colorBgHighlight;
         this._colorFgHighlight = params.colorFgHighlight;
         this._outline = params.outline;
-        this._scale = params.scale;
-        this._connectionPoints = {};
     }
 
-    // Getters
     public get uuid(): string {
         return this._uuid;
     }
+
     public get name(): string {
         return this._name;
     }
+
     public get kind(): TBrickKind {
         return this._kind;
     }
+
     public get type(): TBrickType {
         return this._type;
     }
-    public get label(): string {
-        return this._label;
-    }
-    public get glyph(): string {
-        return this._glyph;
-    }
-    public get colorBg(): TBrickColor {
-        return this._colorBg;
-    }
-    public get colorFg(): TBrickColor {
-        return this._colorFg;
-    }
-    public get colorBgHighlight(): TBrickColor {
-        return this._colorBgHighlight;
-    }
-    public get colorFgHighlight(): TBrickColor {
-        return this._colorFgHighlight;
-    }
-    public get outline(): TBrickColor {
-        return this._outline;
-    }
-    public get scale(): number {
-        return this._scale;
-    }
-    public get connectionPoints(): {
-        ArgsIncoming?: TBrickCoords[];
-        ArgsOutgoing?: TBrickCoords[];
-    } {
-        return this._connectionPoints;
+
+    public set highlighted(value: boolean) {
+        this._highlighted = value;
     }
 
-    public abstract get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords };
-    public abstract get SVGpath(): string;
+    public set scale(value: number) {
+        this._scale = value;
+    }
 
-    protected abstract updateConnectionPoints(): void;
+    public abstract get boundingBox(): TExtent;
+
+    public abstract get connPointsFixed(): Record<string, { extent: TExtent; coords: TCoords }>;
 }
 
 /**
@@ -128,35 +112,26 @@ abstract class BrickModel implements IBrick {
  * Defines the data model of a generic argument brick.
  */
 abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
-    protected _dataType: TBrickArgDataType;
-    protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
-
     constructor(params: {
-        uuid: string; // Added uuid
-        name: string; // Added name
+        uuid: string;
+        name: string;
         type: TBrickType;
+
         label: string;
-        glyph: string;
-        dataType: TBrickArgDataType;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
     }) {
         super({ ...params, kind: 'argument' });
-        this._dataType = params.dataType;
     }
 
-    public get dataType(): TBrickArgDataType {
-        return this._dataType;
-    }
-    public get argExtents(): Map<string, { argLengthX?: number; argLengthY: number }> {
-        return this._argExtents;
-    }
-
-    public abstract get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords };
+    public abstract get connPointsFixed(): Record<
+        'argOutgoing',
+        { extent: TExtent; coords: TCoords }
+    >;
 }
 
 /**
@@ -165,52 +140,52 @@ abstract class BrickModelArgument extends BrickModel implements IBrickArgument {
  * Defines the data model of a generic instruction brick.
  */
 abstract class BrickModelInstruction extends BrickModel implements IBrickInstruction {
-    protected _args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
     protected _connectAbove: boolean;
     protected _connectBelow: boolean;
-    protected _argExtents: Map<string, { argLengthX?: number; argLengthY: number }> = new Map();
+
+    protected _args: { id: string; label: string }[] = [];
 
     constructor(params: {
-        uuid: string; // Added uuid
-        name: string; // Added name
+        uuid: string;
+        name: string;
         type: TBrickType;
+
         label: string;
-        glyph: string;
-        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
         connectAbove: boolean;
         connectBelow: boolean;
+
+        args: {
+            /** unique identifier of the argument */
+            id: string;
+            /** label for the argument */
+            label: string;
+        }[];
     }) {
         super({ ...params, kind: 'instruction' });
-        this._args = params.args;
+
         this._connectAbove = params.connectAbove;
         this._connectBelow = params.connectBelow;
+
+        this._args = params.args;
     }
 
-    public get args(): Record<
-        string,
-        { label: string; dataType: TBrickArgDataType; meta: unknown }
-    > {
-        return this._args;
-    }
     public get connectAbove(): boolean {
         return this._connectAbove;
     }
+
     public get connectBelow(): boolean {
         return this._connectBelow;
     }
-    public get argExtents(): Map<string, { argLengthX?: number; argLengthY: number }> {
-        return this._argExtents;
-    }
 
-    public abstract get bBoxNotchInsTop(): { extent: TBrickExtent; coords: TBrickCoords };
-    public abstract get bBoxNotchInsBot(): { extent: TBrickExtent; coords: TBrickCoords };
-    public abstract get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }>;
+    public abstract get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } };
+
+    public abstract setBoundingBoxArg(id: string, extent: TExtent): void;
 }
 
 /**
@@ -224,40 +199,41 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
     protected _input?: 'boolean' | 'number' | 'string' | 'options';
 
     constructor(params: {
-        uuid: string; // Added uuid
+        uuid: string;
         name: string;
+
         label: string;
-        glyph: string;
-        dataType: TBrickArgDataType;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
+
         dynamic: boolean;
         value?: boolean | number | string;
         input?: 'boolean' | 'number' | 'string' | 'options';
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
     }) {
         super({ ...params, type: 'data' });
+
         this._dynamic = params.dynamic;
         this._value = params.value;
         this._input = params.input;
-        this._connectionPoints.ArgsOutgoing = [];
-        this.updateConnectionPoints();
     }
 
     public get dynamic(): boolean {
         return this._dynamic;
     }
+
     public get value(): boolean | number | string | undefined {
         return this._value;
     }
+
     public get input(): 'boolean' | 'number' | 'string' | 'options' | undefined {
         return this._input;
     }
 
-    protected abstract updateConnectionPoints(): void;
+    public abstract get renderProps(): TBrickRenderPropsData;
 }
 
 /**
@@ -266,39 +242,37 @@ export abstract class BrickModelData extends BrickModelArgument implements IBric
  * Defines the data model of an expression brick.
  */
 export abstract class BrickModelExpression extends BrickModelArgument implements IBrickExpression {
-    protected _args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
+    protected _args: { id: string; label: string }[] = [];
 
     constructor(params: {
-        uuid: string; // Added uuid
+        uuid: string;
         name: string;
+
         label: string;
-        glyph: string;
-        dataType: TBrickArgDataType;
-        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
+
+        args: {
+            /** unique identifier of the argument */
+            id: string;
+            /** label for the argument */
+            label: string;
+        }[];
     }) {
         super({ ...params, type: 'expression' });
+
         this._args = params.args;
-        this._connectionPoints.ArgsIncoming = [];
-        this._connectionPoints.ArgsOutgoing = [];
-        this.updateConnectionPoints();
     }
 
-    public get args(): Record<
-        string,
-        { label: string; dataType: TBrickArgDataType; meta: unknown }
-    > {
-        return this._args;
-    }
+    public abstract get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } };
 
-    public abstract get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }>;
+    public abstract setBoundingBoxArg(id: string, extent: TExtent): void;
 
-    protected abstract updateConnectionPoints(): void;
+    public abstract get renderProps(): TBrickRenderPropsExpression;
 }
 
 /**
@@ -308,26 +282,35 @@ export abstract class BrickModelExpression extends BrickModelArgument implements
  */
 export abstract class BrickModelStatement extends BrickModelInstruction implements IBrickStatement {
     constructor(params: {
-        uuid: string; // Added uuid
+        uuid: string;
         name: string;
+
         label: string;
         glyph: string;
-        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
         connectAbove: boolean;
         connectBelow: boolean;
+
+        args: {
+            /** unique identifier of the argument */
+            id: string;
+            /** label for the argument */
+            label: string;
+        }[];
     }) {
         super({ ...params, type: 'statement' });
-        this._connectionPoints.ArgsOutgoing = [];
-        this.updateConnectionPoints();
     }
 
-    protected abstract updateConnectionPoints(): void;
+    public abstract get connPointsFixed(): Record<
+        'insTop' | 'insBottom',
+        { extent: TExtent; coords: TCoords }
+    >;
+
+    public abstract get renderProps(): TBrickRenderPropsStatement;
 }
 
 /**
@@ -336,64 +319,42 @@ export abstract class BrickModelStatement extends BrickModelInstruction implemen
  * Defines the data model of a block brick.
  */
 export abstract class BrickModelBlock extends BrickModelInstruction implements IBrickBlock {
-    public nestExtent: TBrickExtent = { width: 0, height: 0 };
     protected _folded = false;
 
-    protected _connectionPointsBlock: {
-        Top: TBrickCoords[];
-        Bottom: TBrickCoords[];
-        TopInner: TBrickCoords[];
-    };
-
     constructor(params: {
-        uuid: string; // Added uuid
+        uuid: string;
         name: string;
+
         label: string;
-        glyph: string;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: TBrickArgDataType;
-                meta: {
-                    argId: string;
-                    argLabel: string;
-                    argTypeIncoming: string;
-                };
-            }
-        >;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
         connectAbove: boolean;
         connectBelow: boolean;
+
+        args: {
+            /** unique identifier of the argument */
+            id: string;
+            /** label for the argument */
+            label: string;
+        }[];
     }) {
         super({ ...params, type: 'block' });
-        this._connectionPointsBlock = {
-            Top: [],
-            Bottom: [],
-            TopInner: [],
-        };
-        this._connectionPoints.ArgsIncoming = [];
-        this.updateConnectionPoints();
     }
 
-    public get folded(): boolean {
-        return this._folded;
+    public set folded(value: boolean) {
+        this._folded = value;
     }
 
-    public get connectionPointsBlock(): {
-        Top: TBrickCoords[];
-        Bottom: TBrickCoords[];
-        TopInner: TBrickCoords[];
-    } {
-        return this._connectionPointsBlock;
-    }
+    public abstract get connPointsFixed(): Record<
+        'insTop' | 'insBottom' | 'insNest',
+        { extent: TExtent; coords: TCoords }
+    >;
 
-    public abstract get bBoxNotchInsNestTop(): { extent: TBrickExtent; coords: TBrickCoords };
+    public abstract get renderProps(): TBrickRenderPropsBlock;
 
-    protected abstract updateConnectionPoints(): void;
+    public abstract setBoundingBoxNest(extent: TExtent): void;
 }

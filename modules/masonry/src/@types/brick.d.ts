@@ -12,15 +12,9 @@ export type TBrickType = 'data' | 'expression' | 'statement' | 'block';
 
 /**
  * @type
- * Data type (boolean, number, string, any) returned by an argument brick.
- */
-export type TBrickArgDataType = 'boolean' | 'number' | 'string' | 'any';
-
-/**
- * @type
  * Bounding box dimensions of a brick.
  */
-export type TBrickExtent = {
+export type TExtent = {
     width: number;
     height: number;
 };
@@ -29,7 +23,7 @@ export type TBrickExtent = {
  * @type
  * Position co-ordinates of a brick.
  */
-export type TBrickCoords = {
+export type TCoords = {
     /** relative x co-ordinate */
     x: number;
     /** relative y co-ordinate */
@@ -38,68 +32,73 @@ export type TBrickCoords = {
 
 /**
  * @type
- * Defines color property of a brick. Supported types are RGC, HSL, and hexadecimal.
+ * Defines color property of a brick. Supported types are RGB, HSL, and hexadecimal.
  */
-export type TBrickColor = ['rgb' | 'hsl', number, number, number] | string;
+export type TColor = ['rgb' | 'hsl', number, number, number] | string;
 
 // -------------------------------------------------------------------------------------------------
 
-/**
- * @interface
- * Style properties of a generic brick.
- */
-export interface IBrickStyle {
-    /** background color */
-    get colorBg(): TBrickColor;
-    /** foreground color */
-    get colorFg(): TBrickColor;
-    /** outline/stroke color */
-    get outline(): TBrickColor;
-    /** scale factor of the brick SVG */
-    get scale(): number;
-}
+type TBrickRenderProps = {
+    path: string;
+    label: string;
+    glyph: string;
+    colorBg: TColor;
+    colorFg: TColor;
+    outline: TColor;
+    scale: number;
+};
+
+export type TBrickRenderPropsData = TBrickRenderProps & {
+    // reserving spot for future-proofing
+};
+
+export type TBrickRenderPropsExpression = TBrickRenderProps & {
+    labelArgs: string[];
+    boundingBoxArgs: TExtent[];
+};
+
+export type TBrickRenderPropsStatement = TBrickRenderProps & {
+    labelArgs: string[];
+    boundingBoxArgs: TExtent[];
+};
+
+export type TBrickRenderPropsBlock = TBrickRenderProps & {
+    labelArgs: string[];
+    boundingBoxArgs: TExtent[];
+    boundingBoxNest: TExtent;
+    folded: boolean;
+};
+
+// -------------------------------------------------------------------------------------------------
 
 /**
  * @interface
  * Arguments for a brick.
  */
 export interface IBrickArgs {
-    /** map of argument ID to data associated with the argument */
-    get args(): Record<
-        string,
-        {
-            /** argument label */
-            label: string;
-            /** data type returned by the argument brick */
-            dataType: TBrickArgDataType;
-            /** metadata — reserved for future-proofing */
-            meta: unknown;
-        }
-    >;
-}
+    /** list of argument connection points of the brick */
+    get connPointsArg(): {
+        [id: string]: {
+            /** bounding box dimensions of the connection point */
+            extent: TExtent;
+            /** co-ordinates of the connection point */
+            coords: TCoords;
+        };
+    };
 
-/**
- * @interface
- * State properties associated with bricks that can take arguments.
- */
-export interface IBrickArgsState {
-    /** Map of argument ID to corresponding extent and coords */
-    get bBoxArgs(): Record<
-        string,
-        {
-            /** Bounding box dimensions */
-            extent: TBrickExtent;
-            /** Co-ordinates of the argument connections relative to the brick */
-            coords: TBrickCoords;
-        }
-    >;
+    /**
+     * Sets the bounding box extents for an arg
+     * @param id arg identifier
+     * @param extent width and height values of the arg
+     */
+    setBoundingBoxArg(id: string, extent: TExtent): void;
 }
 
 /**
  * @interface
  * Type definition of a generic brick (any type).
  */
-export interface IBrick extends IBrickStyle {
+export interface IBrick {
     /** unique ID of the brick */
     get uuid(): string;
     /** name of the brick — to be used for internal bookkeeping */
@@ -108,64 +107,44 @@ export interface IBrick extends IBrickStyle {
     get kind(): TBrickKind;
     /** type of the brick */
     get type(): TBrickType;
-    /** label for the brick */
-    get label(): string;
-    /** glyph icon associated with the brick */
-    get glyph(): string;
 
-    // states
     /** whether brick is highlighted */
-    highlighted: boolean;
-    /** Bounding box dimensions and coords of the brick */
-    get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords };
+    set highlighted(value: boolean);
+    /** current vector scale factor */
+    set scale(value: number);
 
-    /** SVG string for the brick based on defining properties and current state */
-    get SVGpath(): string;
+    /** bounding box dimensions of the brick */
+    get boundingBox(): TExtent;
+    /** list of fixed connection points of the brick */
+    get connPointsFixed(): Record<
+        string,
+        {
+            /** bounding box dimensions of the connection point */
+            extent: TExtent;
+            /** co-ordinates of the connection point */
+            coords: TCoords;
+        }
+    >;
 }
 
 /**
  * @interface
  * Type definition of a generic argument brick (data or expression type).
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IBrickArgument extends IBrick {
-    /** data type returned by an argument brick */
-    get dataType(): TBrickArgDataType;
-
-    /** Bounding box dimensions and coords of the left notch */
-    get bBoxNotchArg(): {
-        /** Bounding box dimensions of the left notch */
-        extent: TBrickExtent;
-        /** Co-ordinates of the left notch relative to the brick */
-        coords: TBrickCoords;
-    };
+    // reserving spot for future-proofing
 }
 
 /**
  * @interface
  * Type definition of a generic instruction brick (statement or block type).
  */
-export interface IBrickInstruction extends IBrick, IBrickArgs, IBrickArgsState {
-    // style
+export interface IBrickInstruction extends IBrick, IBrickArgs {
     /** is connection allowed above the brick */
     get connectAbove(): boolean;
     /** is connection allowed below the brick */
     get connectBelow(): boolean;
-
-    /** Bounding box dimensions and coords of the top instruction notch */
-    get bBoxNotchInsTop(): {
-        /** Bounding box dimensions of the top instruction notch */
-        extent: TBrickExtent;
-        /** Co-ordinates of the top instruction notch relative to the brick */
-        coords: TBrickCoords;
-    };
-
-    /** Bounding box dimensions and coords of the bottom instruction notch */
-    get bBoxNotchInsBot(): {
-        /** Bounding box dimensions of the bottom instruction notch */
-        extent: TBrickExtent;
-        /** Co-ordinates of the bottom instruction notch relative to the brick */
-        coords: TBrickCoords;
-    };
 }
 
 /**
@@ -179,24 +158,27 @@ export interface IBrickData extends IBrickArgument {
     get value(): undefined | boolean | number | string;
     /** (if dynamic) input mode for the brick (checkbox, number box, text box, dropdown, etc.) */
     get input(): undefined | 'boolean' | 'number' | 'string' | 'options';
+
+    /** list of properties required to render the data brick graphic */
+    get renderProps(): IBrickRenderPropsData;
 }
 
 /**
  * @interface
  * Type definition of an argument brick.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IBrickExpression extends IBrickArgument, IBrickArgs, IBrickArgsState {
-    // reserving spot for future-proofing
+    /** list of properties required to render the expression brick graphic */
+    get renderProps(): IBrickRenderPropsExpression;
 }
 
 /**
  * @interface
  * Type definition of a statement brick.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IBrickStatement extends IBrickInstruction {
-    // reserving spot for future-proofing
+    /** list of properties required to render the statement brick graphic */
+    get renderProps(): IBrickRenderPropsStatement;
 }
 
 /**
@@ -204,17 +186,15 @@ export interface IBrickStatement extends IBrickInstruction {
  * Type definition of a block brick.
  */
 export interface IBrickBlock extends IBrickInstruction, IBrickNotchInsNestTopState {
-    // state
-    /** combined bounding box of the instructions nested within the brick */
-    get nestExtent(): TBrickExtent;
     /** whether brick nesting is hidden */
-    folded: boolean;
+    set folded(value: boolean);
 
-    /** Bounding box dimensions and coords of the top instruction notch of the nesting */
-    get bBoxNotchInsNestTop(): {
-        /** Bounding box dimensions of the top instruction notch of the nesting */
-        extent: TBrickExtent;
-        /** Co-ordinates of the top instruction notch of the nesting relative to the brick */
-        coords: TBrickCoords;
-    };
+    /** list of properties required to render the block brick graphic */
+    get renderProps(): IBrickRenderPropsBlock;
+
+    /**
+     * Sets the bounding box extents for the nested area
+     * @param extent width and height values of the nest area
+     */
+    setBoundingBoxNest(extent: TExtent): void;
 }
