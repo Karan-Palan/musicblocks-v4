@@ -82,22 +82,82 @@ interface BrickWrapperProps {
 const BrickWrapper: React.FC<BrickWrapperProps> = ({ type, params }) => {
   switch (type) {
     case 'block': {
-      const instance = createBrickBlock(params as any);
+      const instance = createBrickBlock(
+        params as {
+          name: string;
+          label: string;
+          glyph: string;
+          args: { id: string; label: string }[];
+          colorBg: TColor;
+          colorFg: TColor;
+          colorBgHighlight: TColor;
+          colorFgHighlight: TColor;
+          outline: TColor;
+          scale: number;
+          connectAbove: boolean;
+          connectBelow: boolean;
+          nestLengthY: number;
+          folded?: boolean;
+        },
+      );
       return <BrickBlockComponent instance={instance} />;
     }
 
     case 'data': {
-      const instance = createBrickData(params as any);
+      const instance = createBrickData(
+        params as {
+          name: string;
+          label: string;
+          glyph: string;
+          dynamic: boolean;
+          value?: boolean | number | string;
+          input?: 'boolean' | 'number' | 'string' | 'options';
+          colorBg: TColor;
+          colorFg: TColor;
+          colorBgHighlight: TColor;
+          colorFgHighlight: TColor;
+          outline: TColor;
+          scale: number;
+        },
+      );
       return <BrickDataComponent instance={instance} />;
     }
 
     case 'expression': {
-      const instance = createBrickExpression(params as any);
+      const instance = createBrickExpression(
+        params as {
+          name: string;
+          label: string;
+          glyph: string;
+          args: Record<string, { label: string; dataType: string; meta: unknown }>;
+          colorBg: TColor;
+          colorFg: TColor;
+          colorBgHighlight: TColor;
+          colorFgHighlight: TColor;
+          outline: TColor;
+          scale: number;
+        },
+      );
       return <BrickExpressionComponent instance={instance} />;
     }
 
     case 'statement': {
-      const instance = createBrickStatement(params as any);
+      const instance = createBrickStatement(
+        params as {
+          name: string;
+          label: string;
+          glyph: string;
+          args: Record<string, { label: string; dataType: string; meta: unknown }>;
+          colorBg: TColor;
+          colorFg: TColor;
+          colorBgHighlight: TColor;
+          colorFgHighlight: TColor;
+          outline: TColor;
+          scale: number;
+          connectAbove: boolean;
+          connectBelow: boolean;
+        },
+      );
       return <BrickStatementComponent instance={instance} />;
     }
 
