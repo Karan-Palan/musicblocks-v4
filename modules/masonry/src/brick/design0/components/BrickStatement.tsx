@@ -1,26 +1,46 @@
-import type { JSX } from 'react';
-import type { IBrickStatement, TBrickCoords } from '@/@types/brick';
+import React from 'react';
+import type { IBrickStatement } from '@/@types/brick';
 
-export default function BrickStatement({
-  instance,
-  coords = { x: 0, y: 0 },
-}: {
+/**
+ * Props for BrickStatement component.
+ */
+interface BrickStatementProps {
   instance: IBrickStatement;
-  coords?: TBrickCoords;
-}): JSX.Element {
+}
+
+/**
+ * Component to render a BrickStatement.
+ * @param props - The props for BrickStatement.
+ * @returns JSX.Element representing the BrickStatement as an SVG.
+ */
+const BrickStatementComponent: React.FC<BrickStatementProps> = ({ instance }) => {
+  const renderProps = instance.renderProps();
+  const { path: SVGpath, label, glyph, colorBg, colorFg, outline, scale } = renderProps;
+
   return (
-    <g transform={`translate(${coords?.x},${coords?.y}) scale(${instance.scale})`}>
+    <g transform={`scale(${scale})`} id={instance.uuid}>
       <path
-        d={instance.SVGpath}
+        d={SVGpath}
         style={{
-          fill: instance.colorBg as string,
-          fillOpacity: 1,
-          stroke: instance.outline as string,
+          fill: colorBg,
+          stroke: outline,
           strokeWidth: 1,
           strokeLinecap: 'round',
           strokeOpacity: 1,
         }}
       />
+      {glyph && (
+        <text x={5} y={20} style={{ fill: colorFg }}>
+          {glyph}
+        </text>
+      )}
+      {label && (
+        <text x={25} y={20} style={{ fill: colorFg }}>
+          {label}
+        </text>
+      )}
     </g>
   );
-}
+};
+
+export default BrickStatementComponent;

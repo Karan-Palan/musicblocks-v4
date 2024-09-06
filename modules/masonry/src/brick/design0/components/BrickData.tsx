@@ -1,28 +1,46 @@
-import type { JSX } from 'react';
-import type { IBrickData, TBrickCoords } from '@/@types/brick';
+import React from 'react';
+import type { IBrickData } from '@/@types/brick';
 
-// -------------------------------------------------------------------------------------------------
+/**
+ * Props for BrickData component.
+ */
+interface BrickDataProps {
+  instance: IBrickData; // The instance of BrickData
+}
 
-export default function BrickData({
-  instance,
-  coords = { x: 0, y: 0 },
-}: {
-  instance: IBrickData;
-  coords?: TBrickCoords;
-}): JSX.Element {
+/**
+ * Component to render a BrickData.
+ * @param props - The props for BrickData.
+ * @returns JSX.Element representing the BrickData as an SVG.
+ */
+const BrickDataComponent: React.FC<BrickDataProps> = ({ instance }) => {
+  const renderProps = instance.renderProps();
+  const { path: SVGpath, label, glyph, colorBg, colorFg, outline, scale } = renderProps;
+
   return (
-    <g transform={`translate(${coords?.x},${coords?.y}) scale(${instance.scale})`}>
+    <g transform={`scale(${scale})`} id={instance.uuid}>
       <path
-        d={instance.SVGpath}
+        d={SVGpath}
         style={{
-          fill: instance.colorBg as string,
-          fillOpacity: 1,
-          stroke: instance.outline as string,
+          fill: colorBg,
+          stroke: outline,
           strokeWidth: 1,
           strokeLinecap: 'round',
           strokeOpacity: 1,
         }}
       />
+      {glyph && (
+        <text x={5} y={20} style={{ fill: colorFg }}>
+          {glyph}
+        </text>
+      )}
+      {label && (
+        <text x={25} y={20} style={{ fill: colorFg }}>
+          {label}
+        </text>
+      )}
     </g>
   );
-}
+};
+
+export default BrickDataComponent;

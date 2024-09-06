@@ -115,4 +115,8 @@ export default class BrickBlock extends BrickModelBlock {
     public setBoundingBoxNest(extent: TExtent): void {
         this._boundingBoxNest = extent;
     }
+
+    public setHighlighted(highlighted: boolean): void {
+        this._highlighted = highlighted;
+    }
 }

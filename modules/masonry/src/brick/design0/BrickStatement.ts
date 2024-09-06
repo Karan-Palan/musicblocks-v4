@@ -16,14 +16,7 @@ export default class BrickStatement extends BrickModelStatement {
         name: string;
         label: string;
         glyph: string;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: string; // Change from TBrickArgDataType to string for compatibility
-                meta: unknown;
-            }
-        >;
+        args: { id: string; label: string }[];
         colorBg: TColor;
         colorFg: TColor;
         colorBgHighlight: TColor;
@@ -33,25 +26,16 @@ export default class BrickStatement extends BrickModelStatement {
         connectAbove: boolean;
         connectBelow: boolean;
     }) {
-        // Convert `args` to an array
-        const formattedArgs = Object.keys(params.args).map((id) => ({
-            id,
-            label: params.args[id].label,
-        }));
-
-        super({
-            ...params,
-            args: formattedArgs,
-        });
+        super(params);
 
         this._pathResults = generatePath({
             hasNest: false,
             hasNotchArg: false,
-            hasNotchInsTop: this._connectAbove,
-            hasNotchInsBot: this._connectBelow,
+            hasNotchInsTop: params.connectAbove,
+            hasNotchInsBot: params.connectBelow,
             scale: this._scale,
             innerLengthX: 100,
-            argHeights: Array.from({ length: formattedArgs.length }, () => 17),
+            argHeights: Array.from({ length: params.args.length }, () => 17),
         });
     }
 
@@ -81,10 +65,10 @@ export default class BrickStatement extends BrickModelStatement {
     public get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } } {
         const results: { [id: string]: { extent: TExtent; coords: TCoords } } = {};
 
-        Object.keys(this._args).forEach((id) => {
+        this._args.forEach(({ id }, index) => {
             results[id] = {
                 extent: { width: 10, height: 10 }, // Example extent
-                coords: { x: 0, y: 0 }, // Example coordinates calculation
+                coords: { x: 0, y: index * 20 }, // Example coordinates calculation
             };
         });
 
@@ -95,8 +79,8 @@ export default class BrickStatement extends BrickModelStatement {
         return {
             path: this._pathResults.path,
             label: this._label,
-            labelArgs: Object.values(this._args).map(({ label }) => label),
-            boundingBoxArgs: Object.keys(this._args).map((id) => this._boundingBoxArgs[id]),
+            labelArgs: this._args.map(({ label }) => label),
+            boundingBoxArgs: this._args.map(({ id }) => this._boundingBoxArgs[id]),
             glyph: this._glyph,
             colorBg: !this._highlighted ? this._colorBg : this._colorBgHighlight,
             colorFg: !this._highlighted ? this._colorFg : this._colorFgHighlight,
@@ -118,6 +102,6 @@ export default class BrickStatement extends BrickModelStatement {
     }
 
     public setHighlighted(highlighted: boolean): void {
-        this.highlighted = highlighted;
+        this._highlighted = highlighted;
     }
 }

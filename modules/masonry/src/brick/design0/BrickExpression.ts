@@ -14,7 +14,6 @@ export default class BrickExpression extends BrickModelExpression {
     constructor(params: {
         uuid: string;
         name: string;
-
         label: string;
         glyph?: string;
         colorBg: TColor;
@@ -22,13 +21,7 @@ export default class BrickExpression extends BrickModelExpression {
         colorBgHighlight: TColor;
         colorFgHighlight: TColor;
         outline: TColor;
-
-        args: {
-            /** unique identifier of the argument */
-            id: string;
-            /** label for the argument */
-            label: string;
-        }[];
+        args: { id: string; label: string }[];
     }) {
         super(params);
 
@@ -59,7 +52,6 @@ export default class BrickExpression extends BrickModelExpression {
         };
     }
 
-    // Implementation of argument connection points getter
     public get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } } {
         const results: { [id: string]: { extent: TExtent; coords: TCoords } } = {};
 
@@ -76,11 +68,9 @@ export default class BrickExpression extends BrickModelExpression {
     public get renderProps(): TBrickRenderPropsExpression {
         return {
             path: this._pathResults.path,
-
             label: this._label,
             labelArgs: this._args.map(({ label }) => label),
             boundingBoxArgs: this._args.map(({ id }) => this._boundingBoxArgs[id]),
-
             glyph: this._glyph,
             colorBg: !this._highlighted ? this._colorBg : this._colorBgHighlight,
             colorFg: !this._highlighted ? this._colorFg : this._colorFgHighlight,
@@ -91,5 +81,9 @@ export default class BrickExpression extends BrickModelExpression {
 
     public setBoundingBoxArg(id: string, extent: TExtent): void {
         this._boundingBoxArgs[id] = extent;
+    }
+
+    public setHighlighted(highlighted: boolean): void {
+        this._highlighted = highlighted;
     }
 }
