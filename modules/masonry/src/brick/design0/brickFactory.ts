@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { TBrickArgDataType, TBrickColor } from '@/@types/brick';
+import type { TColor } from '@/@types/brick';
 import BrickStatement from './BrickStatement';
 import BrickExpression from './BrickExpression';
 import BrickData from './BrickData';
@@ -40,6 +40,17 @@ function deleteBrickFromWarehouse(id: string): boolean {
 }
 
 /**
+ * Converts a Record type args to an array.
+ * @param argsRecord - Record of args objects.
+ * @returns Converted args as an array.
+ */
+function argsRecordToArray(
+    argsRecord: Record<string, { label: string; dataType: string; meta: unknown }>,
+): { id: string; label: string }[] {
+    return Object.entries(argsRecord).map(([id, { label }]) => ({ id, label }));
+}
+
+/**
  * Factory function to create a new BrickBlock instance.
  * @param params - Parameters to initialize the BrickBlock.
  * @returns A new instance of BrickBlock.
@@ -48,23 +59,12 @@ export function createBrickBlock(params: {
     name: string;
     label: string;
     glyph: string;
-    args: Record<
-        string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: {
-                argId: string;
-                argLabel: string;
-                argTypeIncoming: string;
-            };
-        }
-    >;
-    colorBg: TBrickColor;
-    colorFg: TBrickColor;
-    colorBgHighlight: TBrickColor;
-    colorFgHighlight: TBrickColor;
-    outline: TBrickColor;
+    args: { id: string; label: string }[];
+    colorBg: TColor;
+    colorFg: TColor;
+    colorBgHighlight: TColor;
+    colorFgHighlight: TColor;
+    outline: TColor;
     scale: number;
     connectAbove: boolean;
     connectBelow: boolean;
@@ -88,15 +88,14 @@ export function createBrickData(params: {
     name: string;
     label: string;
     glyph: string;
-    dataType: TBrickArgDataType;
     dynamic: boolean;
     value?: boolean | number | string;
     input?: 'boolean' | 'number' | 'string' | 'options';
-    colorBg: TBrickColor;
-    colorFg: TBrickColor;
-    colorBgHighlight: TBrickColor;
-    colorFgHighlight: TBrickColor;
-    outline: TBrickColor;
+    colorBg: TColor;
+    colorFg: TColor;
+    colorBgHighlight: TColor;
+    colorFgHighlight: TColor;
+    outline: TColor;
     scale: number;
 }): BrickData {
     const brick = new BrickData({
@@ -116,25 +115,18 @@ export function createBrickExpression(params: {
     name: string;
     label: string;
     glyph: string;
-    dataType: TBrickArgDataType;
-    args: Record<
-        string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
-    >;
-    colorBg: TBrickColor;
-    colorFg: TBrickColor;
-    colorBgHighlight: TBrickColor;
-    colorFgHighlight: TBrickColor;
-    outline: TBrickColor;
+    args: Record<string, { label: string; dataType: string; meta: unknown }>;
+    colorBg: TColor;
+    colorFg: TColor;
+    colorBgHighlight: TColor;
+    colorFgHighlight: TColor;
+    outline: TColor;
     scale: number;
 }): BrickExpression {
     const brick = new BrickExpression({
         uuid: uuidv4(),
         ...params,
+        args: argsRecordToArray(params.args), // Convert Record to array
     });
     addBrickToWarehouse(brick);
     return brick;
@@ -149,19 +141,12 @@ export function createBrickStatement(params: {
     name: string;
     label: string;
     glyph: string;
-    args: Record<
-        string,
-        {
-            label: string;
-            dataType: TBrickArgDataType;
-            meta: unknown;
-        }
-    >;
-    colorBg: TBrickColor;
-    colorFg: TBrickColor;
-    colorBgHighlight: TBrickColor;
-    colorFgHighlight: TBrickColor;
-    outline: TBrickColor;
+    args: Record<string, { label: string; dataType: string; meta: unknown }>;
+    colorBg: TColor;
+    colorFg: TColor;
+    colorBgHighlight: TColor;
+    colorFgHighlight: TColor;
+    outline: TColor;
     scale: number;
     connectAbove: boolean;
     connectBelow: boolean;
@@ -169,6 +154,7 @@ export function createBrickStatement(params: {
     const brick = new BrickStatement({
         uuid: uuidv4(),
         ...params,
+        args: argsRecordToArray(params.args),
     });
     addBrickToWarehouse(brick);
     return brick;

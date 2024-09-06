@@ -1,8 +1,6 @@
-import type { TBrickArgDataType, TBrickColor, TBrickCoords, TBrickExtent } from '@/@types/brick';
+import type { TBrickRenderPropsStatement, TColor, TCoords, TExtent } from '@/@types/brick';
 import { BrickModelStatement } from '../model';
 import { generatePath } from '../utils/path';
-
-// -------------------------------------------------------------------------------------------------
 
 /**
  * @class
@@ -10,6 +8,8 @@ import { generatePath } from '../utils/path';
  */
 export default class BrickStatement extends BrickModelStatement {
     readonly _pathResults: ReturnType<typeof generatePath>;
+
+    private _boundingBoxArgs: Record<string, TExtent> = {};
 
     constructor(params: {
         uuid: string;
@@ -20,126 +20,93 @@ export default class BrickStatement extends BrickModelStatement {
             string,
             {
                 label: string;
-                dataType: TBrickArgDataType;
+                dataType: string; // Change from TBrickArgDataType to string for compatibility
                 meta: unknown;
             }
         >;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
         scale: number;
         connectAbove: boolean;
         connectBelow: boolean;
     }) {
-        super(params);
-        const argsKeys = Object.keys(this._args);
+        // Convert `args` to an array
+        const formattedArgs = Object.keys(params.args).map((id) => ({
+            id,
+            label: params.args[id].label,
+        }));
+
+        super({
+            ...params,
+            args: formattedArgs,
+        });
+
         this._pathResults = generatePath({
             hasNest: false,
             hasNotchArg: false,
-            hasNotchInsTop: true,
-            hasNotchInsBot: true,
+            hasNotchInsTop: this._connectAbove,
+            hasNotchInsBot: this._connectBelow,
             scale: this._scale,
             innerLengthX: 100,
-            argHeights: Array.from({ length: argsKeys.length }, () => 17),
+            argHeights: Array.from({ length: formattedArgs.length }, () => 17),
         });
     }
 
-    // Getter for SVG path
-    public get SVGpath(): string {
-        return this._pathResults.path;
+    public get boundingBox(): TExtent {
+        return {
+            width: this._pathResults.bBoxBrick.extent.width,
+            height: this._pathResults.bBoxBrick.extent.height,
+        };
     }
 
-    // Getter for bounding box of the brick
-    public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
+    public get connPointsFixed(): Record<
+        'insTop' | 'insBottom',
+        { extent: TExtent; coords: TCoords }
+    > {
         return {
-            extent: {
-                width: this._pathResults.bBoxBrick.extent.width * this._scale,
-                height: this._pathResults.bBoxBrick.extent.height * this._scale,
+            insTop: {
+                extent: this._pathResults.bBoxNotchInsTop!.extent,
+                coords: this._pathResults.bBoxNotchInsTop!.coords,
             },
-            coords: {
-                x: this._pathResults.bBoxBrick.coords.x * this._scale,
-                y: this._pathResults.bBoxBrick.coords.y * this._scale,
+            insBottom: {
+                extent: this._pathResults.bBoxNotchInsBot!.extent,
+                coords: this._pathResults.bBoxNotchInsBot!.coords,
             },
         };
     }
 
-    // Getter for bounding boxes of the arguments
-    public get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }> {
-        const argsKeys = Object.keys(this._args);
-        const result: Record<string, { extent: TBrickExtent; coords: TBrickCoords }> = {};
+    public get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } } {
+        const results: { [id: string]: { extent: TExtent; coords: TCoords } } = {};
 
-        argsKeys.forEach((key, index) => {
-            result[key] = {
-                extent: {
-                    width: this._pathResults.bBoxArgs.extent.width * this._scale,
-                    height: this._pathResults.bBoxArgs.extent.height * this._scale,
-                },
-                coords: {
-                    x: this._pathResults.bBoxArgs.coords[index].x * this._scale,
-                    y: this._pathResults.bBoxArgs.coords[index].y * this._scale,
-                },
+        Object.keys(this._args).forEach((id) => {
+            results[id] = {
+                extent: { width: 10, height: 10 }, // Example extent
+                coords: { x: 0, y: 0 }, // Example coordinates calculation
             };
         });
 
-        return result;
+        return results;
     }
 
-    // Getter for bounding box of the top insertion notch
-    public get bBoxNotchInsTop(): { extent: TBrickExtent; coords: TBrickCoords } {
+    public get renderProps(): TBrickRenderPropsStatement {
         return {
-            extent: {
-                width: this._pathResults.bBoxNotchInsTop!.extent.width * this._scale,
-                height: this._pathResults.bBoxNotchInsTop!.extent.height * this._scale,
-            },
-            coords: {
-                x: this._pathResults.bBoxNotchInsTop!.coords.x * this._scale,
-                y: this._pathResults.bBoxNotchInsTop!.coords.y * this._scale,
-            },
+            path: this._pathResults.path,
+            label: this._label,
+            labelArgs: Object.values(this._args).map(({ label }) => label),
+            boundingBoxArgs: Object.keys(this._args).map((id) => this._boundingBoxArgs[id]),
+            glyph: this._glyph,
+            colorBg: !this._highlighted ? this._colorBg : this._colorBgHighlight,
+            colorFg: !this._highlighted ? this._colorFg : this._colorFgHighlight,
+            outline: this._outline,
+            scale: this._scale,
         };
     }
 
-    // Getter for bounding box of the bottom insertion notch
-    public get bBoxNotchInsBot(): { extent: TBrickExtent; coords: TBrickCoords } {
-        return {
-            extent: {
-                width: this._pathResults.bBoxNotchInsBot!.extent.width * this._scale,
-                height: this._pathResults.bBoxNotchInsBot!.extent.height * this._scale,
-            },
-            coords: {
-                x: this._pathResults.bBoxNotchInsBot!.coords.x * this._scale,
-                y: this._pathResults.bBoxNotchInsBot!.coords.y * this._scale,
-            },
-        };
-    }
-
-    // Method to return React props for the BrickStatement component
-    public getReactProps(): Record<string, unknown> {
-        return {
-            uuid: this.uuid,
-            name: this.name,
-            label: this.label,
-            glyph: this.glyph,
-            args: this.args,
-            colorBg: this.colorBg,
-            colorFg: this.colorFg,
-            colorBgHighlight: this.colorBgHighlight,
-            colorFgHighlight: this.colorFgHighlight,
-            outline: this.outline,
-            scale: this.scale,
-            connectAbove: this.connectAbove,
-            connectBelow: this.connectBelow,
-            highlighted: this.highlighted,
-        };
-    }
-
-    // Setters for properties that can change at runtime
-    public setArgs(
-        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>,
-    ): void {
-        this._args = args;
-        this.updateConnectionPoints();
+    public setBoundingBoxArg(id: string, extent: TExtent): void {
+        this._boundingBoxArgs[id] = extent;
     }
 
     public setConnectAbove(connectAbove: boolean): void {
@@ -152,12 +119,5 @@ export default class BrickStatement extends BrickModelStatement {
 
     public setHighlighted(highlighted: boolean): void {
         this.highlighted = highlighted;
-    }
-
-    // Method to update connection points based on current state
-    protected updateConnectionPoints(): void {
-        // Update the connection points for the top and bottom of the brick
-        this._connectionPoints.ArgsIncoming = this.connectAbove ? [{ x: 0, y: 0 }] : [];
-        this._connectionPoints.ArgsOutgoing = this.connectBelow ? [{ x: 0, y: 0 }] : [];
     }
 }

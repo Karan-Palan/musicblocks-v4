@@ -3,7 +3,7 @@ import type { IBrickData, TBrickCoords } from '@/@types/brick';
 
 // -------------------------------------------------------------------------------------------------
 
-export default function ({
+export default function BrickData({
   instance,
   coords = { x: 0, y: 0 },
 }: {

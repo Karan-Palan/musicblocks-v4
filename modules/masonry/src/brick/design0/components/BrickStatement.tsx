@@ -1,9 +1,7 @@
 import type { JSX } from 'react';
 import type { IBrickStatement, TBrickCoords } from '@/@types/brick';
 
-// -------------------------------------------------------------------------------------------------
-
-export default function ({
+export default function BrickStatement({
   instance,
   coords = { x: 0, y: 0 },
 }: {

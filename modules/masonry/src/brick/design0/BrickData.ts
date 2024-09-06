@@ -1,4 +1,4 @@
-import type { TBrickArgDataType, TBrickColor, TBrickCoords, TBrickExtent } from '@/@types/brick';
+import type { TBrickRenderPropsData, TColor, TCoords, TExtent } from '@/@types/brick';
 import { BrickModelData } from '../model';
 import { generatePath } from '../utils/path';
 
@@ -12,112 +12,80 @@ export default class BrickData extends BrickModelData {
     readonly _pathResults: ReturnType<typeof generatePath>;
 
     constructor(params: {
-        //intrinsic
         uuid: string;
         name: string;
         label: string;
         glyph: string;
-        dataType: TBrickArgDataType;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
         dynamic: boolean;
         value?: boolean | number | string;
         input?: 'boolean' | 'number' | 'string' | 'options';
-        //style
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
     }) {
         super(params);
+
         this._pathResults = generatePath({
             hasNest: false,
             hasNotchArg: true,
             hasNotchInsTop: false,
             hasNotchInsBot: false,
             scale: this._scale,
-            innerLengthX: 100,
+            innerLengthX: 100, // This could be dynamic based on text size or other criteria
             argHeights: [],
         });
     }
 
-    // Getter for SVG path
-    public get SVGpath(): string {
-        return this._pathResults.path;
+    // Getter for bounding box dimensions of the brick
+    public get boundingBox(): TExtent {
+        return {
+            width: this._pathResults.bBoxBrick.extent.width,
+            height: this._pathResults.bBoxBrick.extent.height,
+        };
     }
 
-    // Getter for bounding box of the brick
-    public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
-        const { extent, coords } = this._pathResults.bBoxBrick;
+    // Getter for fixed connection points of the brick
+    public get connPointsFixed(): Record<'argOutgoing', { extent: TExtent; coords: TCoords }> {
         return {
-            extent: {
-                width: extent.width * this._scale,
-                height: extent.height * this._scale,
-            },
-            coords: {
-                x: coords.x * this._scale,
-                y: coords.y * this._scale,
+            argOutgoing: {
+                extent: this._pathResults.bBoxNotchArg!.extent,
+                coords: this._pathResults.bBoxNotchArg!.coords,
             },
         };
     }
 
-    // Getter for bounding box of the argument notch
-    public get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords } {
-        const { extent, coords } = this._pathResults.bBoxNotchArg!;
+    // Getter for properties required to render the data brick graphic
+    public get renderProps(): TBrickRenderPropsData {
         return {
-            extent: {
-                width: extent.width * this._scale,
-                height: extent.height * this._scale,
-            },
-            coords: {
-                x: coords.x * this._scale,
-                y: coords.y * this._scale,
-            },
+            path: this._pathResults.path,
+            label: this._label,
+            glyph: this._glyph,
+            colorBg: !this._highlighted ? this._colorBg : this._colorBgHighlight,
+            colorFg: !this._highlighted ? this._colorFg : this._colorFgHighlight,
+            outline: this._outline,
+            scale: this._scale,
         };
     }
 
-    // Method to return React props for the BrickData component
-    public renderProps(): Record<string, unknown> {
-        return {
-            uuid: this.uuid,
-            name: this.name,
-            label: this.label,
-            glyph: this.glyph,
-            dataType: this.dataType,
-            dynamic: this.dynamic,
-            value: this.value,
-            input: this.input,
-            colorBg: this.colorBg,
-            colorFg: this.colorFg,
-            colorBgHighlight: this.colorBgHighlight,
-            colorFgHighlight: this.colorFgHighlight,
-            outline: this.outline,
-            scale: this.scale,
-            highlighted: this.highlighted,
-        };
-    }
-
-    // Setters for properties that can change at runtime
+    // Setter for dynamic property
     public setDynamic(dynamic: boolean): void {
         this._dynamic = dynamic;
-        this.updateConnectionPoints();
     }
 
+    // Setter for value property
     public setValue(value: boolean | number | string): void {
         this._value = value;
     }
 
+    // Setter for input type property
     public setInput(input: 'boolean' | 'number' | 'string' | 'options'): void {
         this._input = input;
     }
 
+    // Setter for highlighted property
     public setHighlighted(highlighted: boolean): void {
-        this.highlighted = highlighted;
-    }
-
-    // Method to update connection points based on current state
-    protected updateConnectionPoints(): void {
-        // Update connection points logic if needed
-        this._connectionPoints.ArgsOutgoing = this._dynamic ? [{ x: 0, y: 0 }] : [];
+        this._highlighted = highlighted;
     }
 }

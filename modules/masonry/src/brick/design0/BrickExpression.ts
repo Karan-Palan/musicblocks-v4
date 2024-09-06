@@ -1,8 +1,6 @@
-import type { TBrickArgDataType, TBrickColor, TBrickCoords, TBrickExtent } from '@/@types/brick';
+import type { TBrickRenderPropsExpression, TColor, TCoords, TExtent } from '@/@types/brick';
 import { BrickModelExpression } from '../model';
 import { generatePath } from '../utils/path';
-
-// -------------------------------------------------------------------------------------------------
 
 /**
  * @class
@@ -11,29 +9,29 @@ import { generatePath } from '../utils/path';
 export default class BrickExpression extends BrickModelExpression {
     readonly _pathResults: ReturnType<typeof generatePath>;
 
+    private _boundingBoxArgs: Record<string, TExtent> = {};
+
     constructor(params: {
         uuid: string;
         name: string;
+
         label: string;
-        glyph: string;
-        dataType: TBrickArgDataType;
-        args: Record<
-            string,
-            {
-                label: string;
-                dataType: TBrickArgDataType;
-                meta: unknown;
-            }
-        >;
-        colorBg: TBrickColor;
-        colorFg: TBrickColor;
-        colorBgHighlight: TBrickColor;
-        colorFgHighlight: TBrickColor;
-        outline: TBrickColor;
-        scale: number;
+        glyph?: string;
+        colorBg: TColor;
+        colorFg: TColor;
+        colorBgHighlight: TColor;
+        colorFgHighlight: TColor;
+        outline: TColor;
+
+        args: {
+            /** unique identifier of the argument */
+            id: string;
+            /** label for the argument */
+            label: string;
+        }[];
     }) {
         super(params);
-        const argsKeys = Object.keys(this._args);
+
         this._pathResults = generatePath({
             hasNest: false,
             hasNotchArg: true,
@@ -41,104 +39,57 @@ export default class BrickExpression extends BrickModelExpression {
             hasNotchInsBot: false,
             scale: this._scale,
             innerLengthX: 100,
-            argHeights: Array.from({ length: argsKeys.length }, () => 17),
+            argHeights: Array.from({ length: this._args.length }, () => 17),
         });
     }
 
-    // Getter for SVG path
-    public get SVGpath(): string {
-        return this._pathResults.path;
+    public get boundingBox(): TExtent {
+        return {
+            width: this._pathResults.bBoxBrick.extent.width,
+            height: this._pathResults.bBoxBrick.extent.height,
+        };
     }
 
-    // Getter for bounding box of the brick
-    public get bBoxBrick(): { extent: TBrickExtent; coords: TBrickCoords } {
+    public get connPointsFixed(): Record<'argOutgoing', { extent: TExtent; coords: TCoords }> {
         return {
-            extent: {
-                width: this._pathResults.bBoxBrick.extent.width * this._scale,
-                height: this._pathResults.bBoxBrick.extent.height * this._scale,
-            },
-            coords: {
-                x: this._pathResults.bBoxBrick.coords.x * this._scale,
-                y: this._pathResults.bBoxBrick.coords.y * this._scale,
+            argOutgoing: {
+                extent: this._pathResults.bBoxNotchArg!.extent,
+                coords: this._pathResults.bBoxNotchArg!.coords,
             },
         };
     }
 
-    // Getter for bounding boxes of the arguments
-    public get bBoxArgs(): Record<string, { extent: TBrickExtent; coords: TBrickCoords }> {
-        const argsKeys = Object.keys(this._args);
-        const result: Record<string, { extent: TBrickExtent; coords: TBrickCoords }> = {};
+    // Implementation of argument connection points getter
+    public get connPointsArg(): { [id: string]: { extent: TExtent; coords: TCoords } } {
+        const results: { [id: string]: { extent: TExtent; coords: TCoords } } = {};
 
-        argsKeys.forEach((key, index) => {
-            result[key] = {
-                extent: {
-                    width: this._pathResults.bBoxArgs.extent.width * this._scale,
-                    height: this._pathResults.bBoxArgs.extent.height * this._scale,
-                },
-                coords: {
-                    x: this._pathResults.bBoxArgs.coords[index].x * this._scale,
-                    y: this._pathResults.bBoxArgs.coords[index].y * this._scale,
-                },
+        this._args.forEach(({ id }, index) => {
+            results[id] = {
+                extent: { width: 10, height: 10 }, // Example extent
+                coords: { x: 0, y: index * 20 }, // Example coordinates calculation
             };
         });
 
-        return result;
+        return results;
     }
 
-    // Getter for bounding box of the argument notch
-    public get bBoxNotchArg(): { extent: TBrickExtent; coords: TBrickCoords } {
+    public get renderProps(): TBrickRenderPropsExpression {
         return {
-            extent: {
-                width: this._pathResults.bBoxNotchArg!.extent.width * this._scale,
-                height: this._pathResults.bBoxNotchArg!.extent.height * this._scale,
-            },
-            coords: {
-                x: this._pathResults.bBoxNotchArg!.coords.x * this._scale,
-                y: this._pathResults.bBoxNotchArg!.coords.y * this._scale,
-            },
+            path: this._pathResults.path,
+
+            label: this._label,
+            labelArgs: this._args.map(({ label }) => label),
+            boundingBoxArgs: this._args.map(({ id }) => this._boundingBoxArgs[id]),
+
+            glyph: this._glyph,
+            colorBg: !this._highlighted ? this._colorBg : this._colorBgHighlight,
+            colorFg: !this._highlighted ? this._colorFg : this._colorFgHighlight,
+            outline: this._outline,
+            scale: this._scale,
         };
     }
 
-    // Method to return React props for the BrickExpression component
-    public getReactProps(): Record<string, unknown> {
-        return {
-            uuid: this.uuid,
-            name: this.name,
-            label: this.label,
-            glyph: this.glyph,
-            dataType: this.dataType,
-            args: this.args,
-            colorBg: this.colorBg,
-            colorFg: this.colorFg,
-            colorBgHighlight: this.colorBgHighlight,
-            colorFgHighlight: this.colorFgHighlight,
-            outline: this.outline,
-            scale: this.scale,
-            highlighted: this.highlighted,
-        };
-    }
-
-    // Setters for properties that can change at runtime
-    public setArgs(
-        args: Record<string, { label: string; dataType: TBrickArgDataType; meta: unknown }>,
-    ): void {
-        this._args = args;
-        this.updateConnectionPoints();
-    }
-
-    public setHighlighted(highlighted: boolean): void {
-        this.highlighted = highlighted;
-    }
-
-    // Method to update connection points based on current state
-    protected updateConnectionPoints(): void {
-        this._connectionPoints.ArgsIncoming = Object.keys(this._args).map((_, index) => ({
-            x: 0,
-            y: index * 20,
-        }));
-        this._connectionPoints.ArgsOutgoing = Object.keys(this._args).map((_, index) => ({
-            x: 0,
-            y: index * 20,
-        }));
+    public setBoundingBoxArg(id: string, extent: TExtent): void {
+        this._boundingBoxArgs[id] = extent;
     }
 }
