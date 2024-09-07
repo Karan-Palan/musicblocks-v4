@@ -5,162 +5,98 @@ import {
   createBrickExpression,
   createBrickStatement,
 } from '../brickFactory';
-import BrickDataComponent from './BrickData';
 import BrickBlockComponent from './BrickBlock';
+import BrickDataComponent from './BrickData';
 import BrickExpressionComponent from './BrickExpression';
 import BrickStatementComponent from './BrickStatement';
-import type { TColor } from '@/@types/brick';
+import type {
+  TBrickRenderPropsBlock,
+  TBrickRenderPropsData,
+  TBrickRenderPropsExpression,
+  TBrickRenderPropsStatement,
+  TCoords,
+} from '@/@types/brick';
 
-type BrickType = 'block' | 'data' | 'expression' | 'statement';
+type TBrickWrapperProps =
+  | { type: 'block'; params: TBrickRenderPropsBlock; coords?: TCoords }
+  | { type: 'data'; params: TBrickRenderPropsData; coords?: TCoords }
+  | { type: 'expression'; params: TBrickRenderPropsExpression; coords?: TCoords }
+  | { type: 'statement'; params: TBrickRenderPropsStatement; coords?: TCoords };
 
-interface BrickWrapperProps {
-  type: BrickType;
-  params:
-    | {
-        name: string;
-        label: string;
-        glyph: string;
-        args: { id: string; label: string }[];
-        colorBg: TColor;
-        colorFg: TColor;
-        colorBgHighlight: TColor;
-        colorFgHighlight: TColor;
-        outline: TColor;
-        scale: number;
-        connectAbove: boolean;
-        connectBelow: boolean;
-        nestLengthY: number;
-        folded?: boolean;
-      }
-    | {
-        name: string;
-        label: string;
-        glyph: string;
-        dynamic: boolean;
-        value?: boolean | number | string;
-        input?: 'boolean' | 'number' | 'string' | 'options';
-        colorBg: TColor;
-        colorFg: TColor;
-        colorBgHighlight: TColor;
-        colorFgHighlight: TColor;
-        outline: TColor;
-        scale: number;
-      }
-    | {
-        name: string;
-        label: string;
-        glyph: string;
-        args: Record<string, { label: string; dataType: string; meta: unknown }>;
-        colorBg: TColor;
-        colorFg: TColor;
-        colorBgHighlight: TColor;
-        colorFgHighlight: TColor;
-        outline: TColor;
-        scale: number;
-      }
-    | {
-        name: string;
-        label: string;
-        glyph: string;
-        args: Record<string, { label: string; dataType: string; meta: unknown }>;
-        colorBg: TColor;
-        colorFg: TColor;
-        colorBgHighlight: TColor;
-        colorFgHighlight: TColor;
-        outline: TColor;
-        scale: number;
-        connectAbove: boolean;
-        connectBelow: boolean;
-      };
-}
-
-/**
- * Higher-order component to wrap different brick components.
- * @param props - The props for BrickWrapper.
- * @returns JSX.Element representing the specific brick component.
- */
-const BrickWrapper: React.FC<BrickWrapperProps> = ({ type, params }) => {
+const BrickWrapper: React.FC<TBrickWrapperProps> = ({ type, params, coords }) => {
   switch (type) {
     case 'block': {
-      const instance = createBrickBlock(
-        params as {
-          name: string;
-          label: string;
-          glyph: string;
-          args: { id: string; label: string }[];
-          colorBg: TColor;
-          colorFg: TColor;
-          colorBgHighlight: TColor;
-          colorFgHighlight: TColor;
-          outline: TColor;
-          scale: number;
-          connectAbove: boolean;
-          connectBelow: boolean;
-          nestLengthY: number;
-          folded?: boolean;
-        },
-      );
-      return <BrickBlockComponent instance={instance} />;
+      const instance = createBrickBlock({
+        name: params.label,
+        label: params.label,
+        glyph: params.glyph || '',
+        args: params.labelArgs.map((label, index) => ({ id: `arg${index}`, label })),
+        colorBg: params.colorBg,
+        colorFg: params.colorFg,
+        colorBgHighlight: params.colorBg,
+        colorFgHighlight: params.colorFg,
+        outline: params.outline,
+        scale: params.scale,
+        connectAbove: true,
+        connectBelow: true,
+        nestLengthY: 0,
+        folded: params.folded,
+      });
+      return <BrickBlockComponent instance={instance.renderProps} coords={coords} />;
     }
-
     case 'data': {
-      const instance = createBrickData(
-        params as {
-          name: string;
-          label: string;
-          glyph: string;
-          dynamic: boolean;
-          value?: boolean | number | string;
-          input?: 'boolean' | 'number' | 'string' | 'options';
-          colorBg: TColor;
-          colorFg: TColor;
-          colorBgHighlight: TColor;
-          colorFgHighlight: TColor;
-          outline: TColor;
-          scale: number;
-        },
-      );
-      return <BrickDataComponent instance={instance} />;
+      const instance = createBrickData({
+        name: params.label,
+        label: params.label,
+        glyph: params.glyph || '',
+        dynamic: true,
+        colorBg: params.colorBg,
+        colorFg: params.colorFg,
+        colorBgHighlight: params.colorBg,
+        colorFgHighlight: params.colorFg,
+        outline: params.outline,
+        scale: params.scale,
+      });
+      return <BrickDataComponent instance={instance.renderProps} coords={coords} />;
     }
-
     case 'expression': {
-      const instance = createBrickExpression(
-        params as {
-          name: string;
-          label: string;
-          glyph: string;
-          args: Record<string, { label: string; dataType: string; meta: unknown }>;
-          colorBg: TColor;
-          colorFg: TColor;
-          colorBgHighlight: TColor;
-          colorFgHighlight: TColor;
-          outline: TColor;
-          scale: number;
-        },
-      );
-      return <BrickExpressionComponent instance={instance} />;
+      const instance = createBrickExpression({
+        name: params.label,
+        label: params.label,
+        glyph: params.glyph || '',
+        args: params.labelArgs.reduce((acc, label, index) => {
+          acc[`arg${index}`] = { label, dataType: 'unknown', meta: {} };
+          return acc;
+        }, {} as Record<string, { label: string; dataType: string; meta: unknown }>),
+        colorBg: params.colorBg,
+        colorFg: params.colorFg,
+        colorBgHighlight: params.colorBg,
+        colorFgHighlight: params.colorFg,
+        outline: params.outline,
+        scale: params.scale,
+      });
+      return <BrickExpressionComponent instance={instance.renderProps} coords={coords} />;
     }
-
     case 'statement': {
-      const instance = createBrickStatement(
-        params as {
-          name: string;
-          label: string;
-          glyph: string;
-          args: Record<string, { label: string; dataType: string; meta: unknown }>;
-          colorBg: TColor;
-          colorFg: TColor;
-          colorBgHighlight: TColor;
-          colorFgHighlight: TColor;
-          outline: TColor;
-          scale: number;
-          connectAbove: boolean;
-          connectBelow: boolean;
-        },
-      );
-      return <BrickStatementComponent instance={instance} />;
+      const instance = createBrickStatement({
+        name: params.label,
+        label: params.label,
+        glyph: params.glyph || '',
+        args: params.labelArgs.reduce((acc, label, index) => {
+          acc[`arg${index}`] = { label, dataType: 'unknown', meta: {} };
+          return acc;
+        }, {} as Record<string, { label: string; dataType: string; meta: unknown }>),
+        colorBg: params.colorBg,
+        colorFg: params.colorFg,
+        colorBgHighlight: params.colorBg,
+        colorFgHighlight: params.colorFg,
+        outline: params.outline,
+        scale: params.scale,
+        connectAbove: true,
+        connectBelow: true,
+      });
+      return <BrickStatementComponent instance={instance.renderProps} coords={coords} />;
     }
-
     default:
       return null;
   }

@@ -1,46 +1,55 @@
 import React from 'react';
-import type { IBrickStatement } from '@/@types/brick';
+import type { TBrickRenderPropsStatement, TCoords } from '@/@types/brick';
 
-/**
- * Props for BrickStatement component.
- */
 interface BrickStatementProps {
-  instance: IBrickStatement;
+  instance: TBrickRenderPropsStatement;
+  coords?: TCoords;
 }
 
-/**
- * Component to render a BrickStatement.
- * @param props - The props for BrickStatement.
- * @returns JSX.Element representing the BrickStatement as an SVG.
- */
-const BrickStatementComponent: React.FC<BrickStatementProps> = ({ instance }) => {
-  const renderProps = instance.renderProps();
-  const { path: SVGpath, label, glyph, colorBg, colorFg, outline, scale } = renderProps;
-
+const BrickStatement: React.FC<BrickStatementProps> = ({ instance, coords = { x: 0, y: 0 } }) => {
   return (
-    <g transform={`scale(${scale})`} id={instance.uuid}>
+    <g transform={`translate(${coords.x},${coords.y}) scale(${instance.scale})`}>
       <path
-        d={SVGpath}
-        style={{
-          fill: colorBg,
-          stroke: outline,
-          strokeWidth: 1,
-          strokeLinecap: 'round',
-          strokeOpacity: 1,
-        }}
+        d={instance.path}
+        fill={instance.colorBg as string}
+        stroke={instance.outline as string}
+        strokeWidth={1}
+        strokeLinecap="round"
       />
-      {glyph && (
-        <text x={5} y={20} style={{ fill: colorFg }}>
-          {glyph}
+      <text
+        x={10}
+        y={20}
+        fill={instance.colorFg as string}
+        fontSize={14}
+        fontFamily="Arial, sans-serif"
+      >
+        {instance.label}
+      </text>
+      {instance.labelArgs.map((argLabel, index) => (
+        <text
+          key={index}
+          x={15}
+          y={40 + index * 20}
+          fill={instance.colorFg as string}
+          fontSize={12}
+          fontFamily="Arial, sans-serif"
+        >
+          {argLabel}
         </text>
-      )}
-      {label && (
-        <text x={25} y={20} style={{ fill: colorFg }}>
-          {label}
+      ))}
+      {instance.glyph && (
+        <text
+          x={instance.boundingBoxArgs[0]?.width - 25 || 0}
+          y={20}
+          fill={instance.colorFg as string}
+          fontSize={14}
+          fontFamily="Arial, sans-serif"
+        >
+          {instance.glyph}
         </text>
       )}
     </g>
   );
 };
 
-export default BrickStatementComponent;
+export default BrickStatement;

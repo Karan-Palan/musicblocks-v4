@@ -1,46 +1,43 @@
 import React from 'react';
-import type { IBrickData } from '@/@types/brick';
+import type { TBrickRenderPropsData, TCoords } from '@/@types/brick';
 
-/**
- * Props for BrickData component.
- */
 interface BrickDataProps {
-  instance: IBrickData; // The instance of BrickData
+  instance: TBrickRenderPropsData;
+  coords?: TCoords;
 }
 
-/**
- * Component to render a BrickData.
- * @param props - The props for BrickData.
- * @returns JSX.Element representing the BrickData as an SVG.
- */
-const BrickDataComponent: React.FC<BrickDataProps> = ({ instance }) => {
-  const renderProps = instance.renderProps();
-  const { path: SVGpath, label, glyph, colorBg, colorFg, outline, scale } = renderProps;
-
+const BrickData: React.FC<BrickDataProps> = ({ instance, coords = { x: 0, y: 0 } }) => {
   return (
-    <g transform={`scale(${scale})`} id={instance.uuid}>
+    <g transform={`translate(${coords.x},${coords.y}) scale(${instance.scale})`}>
       <path
-        d={SVGpath}
-        style={{
-          fill: colorBg,
-          stroke: outline,
-          strokeWidth: 1,
-          strokeLinecap: 'round',
-          strokeOpacity: 1,
-        }}
+        d={instance.path}
+        fill={instance.colorBg as string}
+        stroke={instance.outline as string}
+        strokeWidth={1}
+        strokeLinecap="round"
       />
-      {glyph && (
-        <text x={5} y={20} style={{ fill: colorFg }}>
-          {glyph}
-        </text>
-      )}
-      {label && (
-        <text x={25} y={20} style={{ fill: colorFg }}>
-          {label}
+      <text
+        x={10}
+        y={20}
+        fill={instance.colorFg as string}
+        fontSize={14}
+        fontFamily="Arial, sans-serif"
+      >
+        {instance.label}
+      </text>
+      {instance.glyph && (
+        <text
+          x={50}
+          y={20}
+          fill={instance.colorFg as string}
+          fontSize={14}
+          fontFamily="Arial, sans-serif"
+        >
+          {instance.glyph}
         </text>
       )}
     </g>
   );
 };
 
-export default BrickDataComponent;
+export default BrickData;
