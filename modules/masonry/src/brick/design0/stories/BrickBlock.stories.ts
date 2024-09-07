@@ -11,8 +11,10 @@ export default {
 
 export const NoArgs: Story = {
     args: {
-        Component: CBrickBlock,
-        prototype: MBrickBlock,
+        View: CBrickBlock,
+        Model: MBrickBlock,
+        showIndicators: true,
+
         label: 'Block',
         args: [],
         colorBg: 'yellow',
@@ -24,10 +26,12 @@ export const NoArgs: Story = {
 
 export const WithArgs: Story = {
     args: {
-        Component: CBrickBlock,
-        prototype: MBrickBlock,
+        View: CBrickBlock,
+        Model: MBrickBlock,
+        showIndicators: true,
+
         label: 'Block',
-        args: ['Label 1'],
+        args: ['Label 1', 'Label 2'],
         colorBg: 'yellow',
         colorFg: 'black',
         outline: 'red',

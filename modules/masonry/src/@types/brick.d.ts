@@ -197,4 +197,9 @@ export interface IBrickBlock extends IBrickInstruction, IBrickNotchInsNestTopSta
      * @param extent width and height values of the nest area
      */
     setBoundingBoxNest(extent: TExtent): void;
+
+    get connPointsFixed(): Record<
+        'insTop' | 'insBottom' | 'insNest',
+        { extent: TExtent; coords: TCoords }
+    >;
 }

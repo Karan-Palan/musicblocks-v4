@@ -1,43 +1,40 @@
 import React from 'react';
-import type { TBrickRenderPropsBlock, TCoords } from '@/@types/brick';
+import type { TBrickRenderPropsBlock } from '@/@types/brick';
 
-interface BrickBlockProps {
-  instance: TBrickRenderPropsBlock;
-  coords?: TCoords;
-}
-
-const BrickBlock: React.FC<BrickBlockProps> = ({ instance, coords = { x: 0, y: 0 } }) => {
+const BrickBlock: React.FC<TBrickRenderPropsBlock> = ({
+  path,
+  label,
+  labelArgs,
+  colorBg,
+  colorFg,
+  outline,
+  scale,
+}) => {
   return (
-    <g transform={`translate(${coords.x},${coords.y}) scale(${instance.scale})`}>
+    <g transform={`scale(${scale})`}>
       <path
-        d={instance.path}
-        fill={instance.colorBg as string}
-        stroke={instance.outline as string}
+        d={path}
+        fill={colorBg as string}
+        stroke={outline as string}
         strokeWidth={1}
         strokeLinecap="round"
       />
-      <text
-        x={10}
-        y={20}
-        fill={instance.colorFg as string}
-        fontSize={14}
-        fontFamily="Arial, sans-serif"
-      >
-        {instance.label}
+      <text x={10} y={20} fill={colorFg as string} fontSize={14} fontFamily="Arial, sans-serif">
+        {label}
       </text>
-      {instance.labelArgs.map((argLabel, index) => (
+      {labelArgs.map((argLabel, index) => (
         <text
           key={index}
           x={15}
           y={40 + index * 20}
-          fill={instance.colorFg as string}
+          fill={colorFg as string}
           fontSize={12}
           fontFamily="Arial, sans-serif"
         >
           {argLabel}
         </text>
       ))}
-      {instance.glyph && (
+      {/* {glyph && (
         <text
           x={instance.boundingBoxArgs[0]?.width - 25 || 0}
           y={20}
@@ -47,7 +44,7 @@ const BrickBlock: React.FC<BrickBlockProps> = ({ instance, coords = { x: 0, y: 0
         >
           {instance.glyph}
         </text>
-      )}
+      )} */}
     </g>
   );
 };

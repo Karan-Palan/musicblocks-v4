@@ -1,30 +1,35 @@
-import BrickWrapper from './BrickWrapper';
 import type { JSX } from 'react';
-import type { IBrickBlock, TBrickArgDataType, TBrickColor } from '@/@types/brick';
+import type { IBrickBlock, TBrickRenderPropsBlock, TColor } from '@/@types/brick';
+
+import BrickWrapper from './BrickWrapper';
 
 // -------------------------------------------------------------------------------------------------
 
 export default function (props: {
-  Component: (props: { instance: IBrickBlock; visualIndicators?: JSX.Element }) => JSX.Element;
-  prototype: new (params: {
+  View: React.FC<TBrickRenderPropsBlock>;
+  Model: new (params: {
+    uuid: string;
     name: string;
+
     label: string;
-    glyph: string;
-    args: Record<
-      string,
-      {
-        label: string;
-        dataType: TBrickArgDataType;
-        meta: unknown;
-      }
-    >;
-    colorBg: TBrickColor;
-    colorFg: TBrickColor;
-    outline: TBrickColor;
-    scale: number;
+    glyph?: string;
+    colorBg: TColor;
+    colorFg: TColor;
+    colorBgHighlight: TColor;
+    colorFgHighlight: TColor;
+    outline: TColor;
     connectAbove: boolean;
     connectBelow: boolean;
+
+    args: {
+      /** unique identifier of the argument */
+      id: string;
+      /** label for the argument */
+      label: string;
+    }[];
   }) => IBrickBlock;
+  showIndicators: boolean;
+
   label: string;
   args: string[];
   colorBg: string;
@@ -32,91 +37,86 @@ export default function (props: {
   outline: string;
   scale: number;
 }): JSX.Element {
-  const { Component, prototype, label, args, colorBg, colorFg, outline, scale } = props;
+  const { View, Model, showIndicators, label, args, colorBg, colorFg, outline, scale } = props;
 
-  const instance = new prototype({
+  const instance = new Model({
+    uuid: '',
+    name: '',
+
     label,
-    args: Object.fromEntries(
-      args.map<[string, { label: string; dataType: TBrickArgDataType; meta: unknown }]>((name) => [
-        name,
-        { label: name, dataType: 'any', meta: undefined },
-      ]),
-    ),
     colorBg,
     colorFg,
+    colorBgHighlight: '',
+    colorFgHighlight: '',
     outline,
-    scale,
-    glyph: '',
     connectAbove: true,
     connectBelow: true,
-    name: '',
+
+    args: args.map((label, i) => ({ id: `label_${i}`, label })),
   });
+
+  instance.scale = scale;
 
   const VisualIndicators = () => (
     <>
       {/* Overall Bounding Box of the Brick */}
       <rect
-        x={instance.bBoxBrick.coords.x}
-        y={instance.bBoxBrick.coords.y}
-        height={instance.bBoxBrick.extent.height}
-        width={instance.bBoxBrick.extent.width}
+        x={0}
+        y={0}
+        height={instance.boundingBox.height}
+        width={instance.boundingBox.width}
         fill="black"
         opacity={0.25}
       />
 
-      {/* Right args bounding box */}
-      {Object.keys(instance.bBoxArgs).map((name, i) => {
-        const arg = instance.bBoxArgs[name];
-
-        return (
-          <rect
-            key={i}
-            x={arg.coords.x}
-            y={arg.coords.y}
-            height={arg.extent.height}
-            width={arg.extent.width}
-            fill="green"
-            opacity={0.8}
-          />
-        );
-      })}
-
-      {/* Top instruction notch bounding box */}
+      {/* Connection point of Top */}
       <rect
-        x={instance.bBoxNotchInsTop.coords.x}
-        y={instance.bBoxNotchInsTop.coords.y}
-        height={instance.bBoxNotchInsTop.extent.height}
-        width={instance.bBoxNotchInsTop.extent.width}
+        x={instance.connPointsFixed.insTop.coords.y}
+        y={instance.connPointsFixed.insTop.coords.y}
+        height={instance.connPointsFixed.insTop.extent.height}
+        width={instance.connPointsFixed.insTop.extent.width}
         fill="green"
-        opacity={0.9}
+        opacity={0.75}
       />
 
-      {/* Bottom instruction notch bounding box */}
+      {/* Connection point of Bottom */}
       <rect
-        x={instance.bBoxNotchInsBot.coords.x}
-        y={instance.bBoxNotchInsBot.coords.y}
-        height={instance.bBoxNotchInsBot.extent.height}
-        width={instance.bBoxNotchInsBot.extent.width}
+        x={instance.connPointsFixed.insBottom.coords.y}
+        y={instance.connPointsFixed.insBottom.coords.y}
+        height={instance.connPointsFixed.insBottom.extent.height}
+        width={instance.connPointsFixed.insBottom.extent.width}
         fill="green"
-        opacity={0.9}
+        opacity={0.75}
       />
 
-      {/* Top instruction notch inside nesting bounding box */}
+      {/* Connection point of Nesting */}
       <rect
-        x={instance.bBoxNotchInsNestTop.coords.x}
-        y={instance.bBoxNotchInsNestTop.coords.y}
-        height={instance.bBoxNotchInsNestTop.extent.height}
-        width={instance.bBoxNotchInsNestTop.extent.width}
+        x={instance.connPointsFixed.insNest.coords.y}
+        y={instance.connPointsFixed.insNest.coords.y}
+        height={instance.connPointsFixed.insNest.extent.height}
+        width={instance.connPointsFixed.insNest.extent.width}
         fill="green"
-        opacity={0.9}
+        opacity={0.75}
       />
+
+      {/* Connection points of Args */}
+      {Object.values(instance.connPointsArg).map(({ extent, coords }) => (
+        <rect
+          x={coords.y}
+          y={coords.y}
+          height={extent.height}
+          width={extent.width}
+          fill="purple"
+          opacity={0.75}
+        />
+      ))}
     </>
   );
 
   return (
     <BrickWrapper>
-      <Component instance={instance} />
-      <VisualIndicators />
+      <View {...instance.renderProps} />
+      {showIndicators && <VisualIndicators />}
     </BrickWrapper>
   );
 }

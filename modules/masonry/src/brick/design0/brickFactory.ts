@@ -58,7 +58,7 @@ function argsRecordToArray(
 export function createBrickBlock(params: {
     name: string;
     label: string;
-    glyph: string;
+    glyph?: string;
     args: { id: string; label: string }[];
     colorBg: TColor;
     colorFg: TColor;
